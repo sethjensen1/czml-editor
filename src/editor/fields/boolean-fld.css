@@ -1,0 +1,17 @@
+.boolean-fld .switch {
+    font-size: 14px;
+    margin-left: 250px;
+    top: -0.6em;
+}
+
+.boolean-fld .label {
+    top: -3px;
+    left: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.boolean-fld .underline {
+    transform: scaleX(1);
+}
+

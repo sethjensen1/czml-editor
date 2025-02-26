@@ -1,0 +1,23 @@
+{
+  "name": "czml-editor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/cesium": "^1.70.4",
+    "cesium": "^1.126.0",
+    "preact": "^10.25.4",
+    "slider-color-picker": "^0.2.3"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.1",
+    "typescript": "~5.7.2",
+    "vite": "^6.1.0",
+    "vite-plugin-static-copy": "^2.2.0"
+  }
+}

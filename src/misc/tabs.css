@@ -1,0 +1,6 @@
+.tab {
+    display: none;
+}
+.tab.selected {
+    display: block;
+}
