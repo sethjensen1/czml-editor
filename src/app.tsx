@@ -1,4 +1,6 @@
 import './app.css'
+import "cesium/Build/Cesium/Widgets/widgets.css";
+
 import { Viewer as CesiumViewer} from 'cesium'
 import { Editor } from './editor/editor';
 import { MainLayout } from './misc/main-layout';
@@ -6,7 +8,6 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { createContext } from 'preact';
 
-import "cesium/Build/Cesium/Widgets/widgets.css";
 
 export const ViewerContext = createContext<CesiumViewer| null>(null);
 

@@ -44,7 +44,7 @@ export function PropertyField({subject, property: prop, onChange}: PropertyField
     } else if (type === 'color') {
         return <ColorField label={label} value={value} onChange={changeHandler}/>;
     } else if (type === 'material') {
-        const val = value.color.valueOf();
+        const val = value?.color?.valueOf();
         return <ColorField label={label} value={val} onChange={changeHandler}/>;
     }
 

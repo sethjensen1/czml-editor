@@ -4,11 +4,10 @@ import * as Cesium from "cesium";
 const getParams = new URLSearchParams(window.location.search);
 Cesium.GoogleMaps.defaultApiKey = getParams.get('google_key') || 'AIzaSyCgjboUOBS_g9VjVZnTaRTg9dvfHDiZJ4k';
 
-const googleTileset = Cesium.createGooglePhotorealistic3DTileset();
 
 export function switchGoogleGlobeOn(viewer: Cesium.Viewer) {
 
-    Promise.resolve(googleTileset).then(tileset => {
+    Cesium.createGooglePhotorealistic3DTileset().then(tileset => {
 
         viewer.scene.primitives.add(tileset);
         viewer.scene.globe.show = false;
@@ -19,14 +18,11 @@ export function switchGoogleGlobeOn(viewer: Cesium.Viewer) {
 };
 
 export function switchGoogleGlobeOff (viewer: Cesium.Viewer) {
-    Promise.resolve(googleTileset).then(_ => {
-        
-        viewer.scene.primitives._primitives
-            .filter(p => p._basePath && p._basePath.startsWith('https://tile.googleapis.com/'))
-            .forEach(p => {
-                viewer.scene.primitives.remove(p, true);
-            });
+    viewer.scene.primitives._primitives
+        .filter(p => p._basePath && p._basePath.startsWith('https://tile.googleapis.com/'))
+        .forEach(p => {
+            viewer.scene.primitives.remove(p);
+        });
 
-        viewer.scene.globe.show = true;
-    });
+    viewer.scene.globe.show = true;
 };

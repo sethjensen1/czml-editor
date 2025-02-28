@@ -1,4 +1,4 @@
-import { ConstantProperty, Entity, HeightReference } from "cesium";
+import { ClassificationType, ConstantProperty, Entity, HeightReference } from "cesium";
 import { Tabs } from "../misc/tabs";
 
 import './entity-editor.css';
@@ -15,14 +15,14 @@ export function EntytyEditor({entity}: EntityEditorProps) {
     }
     return (
         <div id={'entity-editor'}>
-            <h2>Selected Entity</h2>
+            <h3>Selected Entity</h3>
             <PolygonEditor entity={entity}/>
         </div>
     );
 }
 
 export type PropertyType = {
-    type: 'number' | 'boolean' | 'color' | 'material';
+    type: 'number' | 'boolean' | 'color' | 'material' | 'distanceDisplayCondition';
 } | {
     type: 'enum';
     enum: any;
@@ -59,7 +59,6 @@ const geomProperties: PropertyMeta[] = [
 ]; 
 
 const appearanceProps: PropertyMeta[] = [
-    {name: 'height', type: 'number'}, 
     {name: 'fill', type: 'boolean'},
     {name: 'material', type: 'material'}, 
     {name: 'outline', type: 'boolean'},
@@ -67,10 +66,10 @@ const appearanceProps: PropertyMeta[] = [
     {name: 'outlineWidth', type: 'number'}, 
 ];
 
-const polygonProps = [
-    'classificationType', 
-    'zIndex', 
-    'distanceDisplayCondition',
+const extraProps: PropertyMeta[] = [
+    {name: 'classificationType', type: 'enum', enum: ClassificationType},
+    {name: 'zIndex', type: 'number'},
+    {name: 'distanceDisplayCondition', type: 'distanceDisplayCondition'}, 
 ];
 
 export type PolygonEditorProps = {
@@ -92,15 +91,23 @@ export function PolygonEditor({entity}: EntityEditorProps) {
             key={prop.name} 
             property={prop} />);
 
+    const extra = subj && extraProps.map(prop => 
+        <PropertyField subject={subj} 
+            key={prop.name} 
+            property={prop} />);
+
     return (
         <div id={'polygon-editor'}>
             <h3>Polygon Editor</h3>
-            <Tabs tabNames={['Appearance', 'Geometry']}>
+            <Tabs tabNames={['Appearance', 'Geometry', 'Extra']}>
                 <>
                 {appearance}
                 </>
                 <>
                 {geom}
+                </>
+                <>
+                {extra}
                 </>
             </Tabs>
 

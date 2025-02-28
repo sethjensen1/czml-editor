@@ -6,9 +6,9 @@ import './entities-list.css';
 export type EntitiesListProps = {
     entities: Entity[];
     entity: Entity | null;
-    onSelectEntity?: (entity: Entity) => void;
+    selectEntity?: (entity: Entity) => void;
 }
-export function EntitiesList({entities, entity, onSelectEntity}: EntitiesListProps) {
+export function EntitiesList({entities, entity, selectEntity}: EntitiesListProps) {
 
     const types = ['billboard', 'label', 'polyline', 'polygon', 'model'];
     const byTypeCounters = {};
@@ -28,7 +28,7 @@ export function EntitiesList({entities, entity, onSelectEntity}: EntitiesListPro
 
         return (
             <div key={e.id} class={cls('entity', entity === e && 'selected')}
-                onClick={() => onSelectEntity && !isFolder && onSelectEntity(e)}>
+                onClick={() => selectEntity && !isFolder && selectEntity(e)}>
 
                 <span class={'entity-type'}>
                 {`${isFolder ? 'folder' : type}`}
