@@ -3,30 +3,51 @@ import camelCaseToTitle from '../../misc/cammelToTitle';
 import { InputField } from './input-fld';
 import { BooleanField } from './boolean-fld';
 import { ColorField } from './color-fld';
+import { Property as CesiumProperty, ConstantProperty } from "cesium";
+import { BillboardGraphics, LabelGraphics, PolygonGraphics, PolylineGraphics } from 'cesium';
+import { useCallback } from 'preact/hooks';
 
 export type PropertyFieldProps = {
-    value: any;
+    subject: PolygonGraphics | PolylineGraphics | BillboardGraphics | LabelGraphics
     property: PropertyMeta;
-    onChange: (value: any) => void;
+    onChange?: (value: any) => void;
 }
-export function PropertyField({value, property, onChange}: PropertyFieldProps) {
+export function PropertyField({subject, property: prop, onChange}: PropertyFieldProps) {
 
-    const { name, type, title } = property;
+    const { name, type, title } = prop;
     const label = title || camelCaseToTitle(name);
 
-    var fld = null;
+    const property = (subject as any)[prop.name] as CesiumProperty;
+    const interpolated = property !== undefined && !property.isConstant;
+
+    const value = (property as ConstantProperty)?.valueOf();
+
+    const changeHandler = useCallback((val: any) => {
+        if (property !== undefined && (property as any).setValue) {
+            (property as ConstantProperty).setValue(val);
+        }
+        else {
+            (subject as any)[prop.name] = val;
+        }
+    }, [subject, property]);
+
+    if (interpolated) {
+        return <div>
+        Cant't edit "{prop.name}" because its values are interpolated
+        </div>
+    }
+    
     if (type === 'number') {
-        fld = <InputField label={label} value={value} onChange={onChange}/>;
+        return <InputField label={label} value={value} onChange={changeHandler}/>;
     } else if (type === 'boolean') {
-        fld = <BooleanField label={label} value={value} onChange={onChange}/>;
+        return <BooleanField label={label} value={value} onChange={changeHandler}/>;
     } else if (type === 'color') {
-        fld = <ColorField label={label} value={value} onChange={onChange}/>;
+        return <ColorField label={label} value={value} onChange={changeHandler}/>;
     } else if (type === 'material') {
         const val = value.color.valueOf();
-        fld = <ColorField label={label} value={val} onChange={onChange}/>;
-    } else {
-        fld = <InputField label={label} value={value} onChange={onChange}/>;
+        return <ColorField label={label} value={val} onChange={changeHandler}/>;
     }
 
-    return fld;
+    return <InputField label={label} value={value} onChange={changeHandler}/>;
+
 }

@@ -17,7 +17,7 @@ export function InputField({label, value, onChange}: InputFieldProps) {
     }, [onChange]);
 
     return (
-        <div class="input-container">
+        <div class="input-container generic">
             <input type={'text'} class={cls('input', (value !== undefined) && 'not-empty')} id={id} 
                 value={value}
                 onChange={inputHandler}></input>

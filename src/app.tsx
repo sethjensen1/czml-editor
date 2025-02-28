@@ -1,44 +1,50 @@
 import './app.css'
-import { Viewer as CesiumViewer, CzmlDataSource, Entity, KmlDataSource } from 'cesium'
+import { Viewer as CesiumViewer} from 'cesium'
 import { Editor } from './editor/editor';
 import { MainLayout } from './misc/main-layout';
-import { useCallback, useRef, useState } from 'preact/hooks';
-import { Viewer } from './viewer';
+import { useEffect, useState } from 'preact/hooks';
 
+import { createContext } from 'preact';
 
-type CesiumDataSource = CzmlDataSource | KmlDataSource;
+import "cesium/Build/Cesium/Widgets/widgets.css";
+
+export const ViewerContext = createContext<CesiumViewer| null>(null);
 
 export function App() {
 
-  const cesiumViewerRef = useRef<CesiumViewer | null>(null);
+  const [viewer, setViewer] = useState<CesiumViewer| null>(null);
 
-  const [entities, setEntities] = useState<Entity[]>([]);
-  const [entity, setEntity] = useState<Entity | null>(null);
-
-  const handleDSLoaded = useCallback((ds: CzmlDataSource | KmlDataSource) => {
-    const newEntities = ds.entities.values;
-    setEntities([...entities, ...newEntities]);
-  }, [entities, setEntities]);
-
-  const handleCesiumDS = useCallback((ds: Promise<CesiumDataSource>) => {
-    const viewer = cesiumViewerRef.current;
-    if (viewer) {
-      viewer.dataSources.add(ds);
-      ds.then(handleDSLoaded);
+  useEffect(() => {
+    if (viewer == null) {
+      setViewer(new CesiumViewer('cesiumContainer', {
+        animation: false,
+        baseLayerPicker: false,
+        fullscreenButton: false,
+        geocoder: false,
+        homeButton: false,
+        infoBox: false,
+        sceneModePicker: false,
+        selectionIndicator: true,
+        timeline: false,
+        navigationHelpButton: false,
+        navigationInstructionsInitiallyVisible: false,
+        scene3DOnly: true,
+        shouldAnimate: true
+      })); 
     }
-  }, [cesiumViewerRef, handleDSLoaded]);
-
-  const editor = <Editor 
-    {...{entities, entity}}
-    onSelectEntity={setEntity}
-    onCesiumDataSource={handleCesiumDS}
-  />;
-  const viewer = <Viewer viewerRef={cesiumViewerRef} />;
+  }, [viewer, setViewer]);
 
   return (
     <MainLayout 
-      sidebar={editor} 
-      mainArea={viewer}/>
+      sidebar={
+        <ViewerContext value={viewer}>
+          <Editor/>
+        </ViewerContext>
+      }
+      mainArea={
+        <div id={'cesiumContainer'}></div>
+      }
+    />
   );
 }
 

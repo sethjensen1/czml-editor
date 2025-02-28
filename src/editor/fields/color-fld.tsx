@@ -1,7 +1,9 @@
-import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
 import "slider-color-picker";
+import { useEffect, useLayoutEffect, useRef } from "preact/hooks";
 import { SliderColorPicker } from "slider-color-picker";
 import { Color as CesiumColor } from "cesium";
+
+import './color-fld.css';
 
 declare module "preact/jsx-runtime" {
     namespace JSX {
@@ -35,12 +37,13 @@ export function ColorField({value, label, onChange}: ColorFieldProps) {
     }, [ref]);
 
   return (
-    <div class="input-container">
-        {label && <label>{label}</label>}
+    <div class="input-container color-fld">
+        {label && <label class={'label'}>{label}</label>}
         <slider-color-picker
             ref={ref}
             onChange={onColorChange}
         ></slider-color-picker>
+        <div class="underline"></div>
     </div>
   );
 }

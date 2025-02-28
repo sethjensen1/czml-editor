@@ -15,16 +15,20 @@
 }
   
 .input-container .label {
+    color: #333;
     position: absolute;
     top: 0;
     left: 0;
-    color: #ccc;
-    transition: all 0.3s ease;
     pointer-events: none;
 }
+
+.input-container.generic .label {
+    color: #ccc;
+    transition: all 0.3s ease;
+}
   
-.input-container input[type="text"]:focus ~ .label,
-.input-container input[type="text"].not-empty ~ .label {
+.input-container.generic input[type="text"]:focus ~ .label,
+.input-container.generic input[type="text"].not-empty ~ .label {
     top: -20px;
     font-size: 16px;
     color: #333;
@@ -37,6 +41,9 @@
     height: 2px;
     width: 100%;
     background-color: #333;
+}
+
+.input-container.generic .underline {
     transform: scaleX(0);
     transition: all 0.3s ease;
 }

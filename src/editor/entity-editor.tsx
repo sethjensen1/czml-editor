@@ -1,8 +1,6 @@
 import { ConstantProperty, Entity, HeightReference } from "cesium";
 import { Tabs } from "../misc/tabs";
 
-import { Property as CesiumProperty } from "cesium";
-
 import './entity-editor.css';
 import { PropertyField } from "./fields/property-fld";
 
@@ -84,29 +82,15 @@ export function PolygonEditor({entity}: EntityEditorProps) {
 
     console.log(subj);
 
-    const createPropField = (prop: PropertyMeta) => {
+    const geom = subj && geomProperties.map(prop => 
+        <PropertyField subject={subj} 
+            key={prop.name} 
+            property={prop} />);
 
-        const property = (subj as any)[prop.name] as CesiumProperty;
-        
-        if( property !== undefined && !property.isConstant ) {
-            return <div>
-                Cant't edit "{prop.name}" because it's values are interpolated
-            </div>
-        }
-
-        const value = (property as ConstantProperty)?.valueOf();
-        
-        return (
-            <PropertyField key={prop.name} 
-                property={prop} value={value} 
-                onChange={(val: any) => {(subj as any)[prop.name] = val;}} />
-        );
-    }
-
-
-    const geom = subj && geomProperties.map(createPropField);
-
-    const appearance = subj && appearanceProps.map(createPropField);
+    const appearance = subj && appearanceProps.map(prop => 
+        <PropertyField subject={subj} 
+            key={prop.name} 
+            property={prop} />);
 
     return (
         <div id={'polygon-editor'}>

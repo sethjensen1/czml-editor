@@ -4,3 +4,11 @@
 .tab.selected {
     display: block;
 }
+
+.tab-header {
+    margin-left: 0.4em;
+}
+
+.tab-header.selected {
+    border-bottom: 2px solid var(--link-color);
+}
