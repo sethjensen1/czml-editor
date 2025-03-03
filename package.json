@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/cesium": "^1.70.4",
     "cesium": "^1.126.0",
+    "html-format": "^1.1.7",
     "preact": "^10.25.4",
     "slider-color-picker": "^0.2.3"
   },

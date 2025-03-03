@@ -1,0 +1,40 @@
+.enum-fld .label {
+    position: relative;
+}
+.enum-fld .underline {
+    position: relative;
+}
+
+.enum-fld.val-undefined .underline {
+    background-color: #ccc;
+}
+
+.enum-fld-options {
+    margin-left: 0.5em;
+    margin-top: 0.25em;
+    margin-bottom: 0.5em;
+}
+
+.enum-fld-option .status {
+    position: absolute;
+    display: inline-block;
+    right: 0.5em;
+    width: 0.8em;
+    height: 0.8em;
+    border-radius: 0.8em;
+    border: 1.6px solid #ddd;
+}
+
+.enum-fld-option:hover .status {
+    background-color: var(--link-hover-color);
+    box-shadow: 0 0 0 2px #a2a2a2 inset;
+}
+
+.enum-fld-option.selected .status {
+    background-color: var(--link-color);
+    box-shadow: 0 0 0 2px #a2a2a2 inset;
+}
+
+.enum-fld-option.selected {
+    color: var(--link-color);
+}
