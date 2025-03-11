@@ -6,6 +6,7 @@ import format from "html-format";
 import cls from "../../misc/cls";
 
 import "./description-fld.css";
+import { ModalPane } from "../../misc/modal-pane";
 
 type DescriptionFldProps = {
     entity: Entity
@@ -20,7 +21,7 @@ export function DescriptionFld({entity}: DescriptionFldProps) {
     const infoBoxRef = useRef<InfoBox>();
     
     const property = entity?.description as CesiumProperty;
-    const description = (property as ConstantProperty).valueOf();
+    const description = (property as ConstantProperty)?.valueOf();
 
     const [editorContent, setEditorContent] = useState<string>();
 
@@ -111,19 +112,17 @@ export function DescriptionFld({entity}: DescriptionFldProps) {
 
     return (
     <div class={'entity-description-fld'}>
-        <div class={cls('modal', edit && 'visible')}>
-            <div class={'content'}>
-                <div class={'editor-actions'}>
-                    <button onClick={handleEditSave}>Save</button>
-                    <span>&nbsp;</span>
-                    <button onClick={handleEditCancel}>Cancel</button>
-                    <span>&nbsp;</span>
-                    <button onClick={handleFormatting}>Format</button>
-                </div>
-                <textarea ref={textAreaRef} class={'description-editor'}
-                    onChange={handleEditorInput}>{editorContent}</textarea>
+        <ModalPane visible={edit} >
+            <div class={'editor-actions'}>
+                <button onClick={handleEditSave}>Save</button>
+                <span>&nbsp;</span>
+                <button onClick={handleEditCancel}>Cancel</button>
+                <span>&nbsp;</span>
+                <button onClick={handleFormatting}>Format</button>
             </div>
-        </div>
+            <textarea ref={textAreaRef} class={'description-editor'}
+                onChange={handleEditorInput}>{editorContent}</textarea>
+        </ModalPane>
         <div class={'label'}>Description</div>
         <button onClick={handlePreview}>Preview</button>
         <span class={'spacer'}>&nbsp;</span>
@@ -134,5 +133,5 @@ export function DescriptionFld({entity}: DescriptionFldProps) {
 function removeEmptyStrings(str?: string) {
     if (!str) return str;
 
-    return str.replace(/^(?<![^\s])[\s]*$/, '');
+    return str.split('\n').filter(s => !s.match(/^[\s]*$/)).join('\n');
 }

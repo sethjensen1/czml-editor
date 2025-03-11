@@ -1,0 +1,8 @@
+.labled-switch label:not(.switch) {
+    margin-right: 0.5em;
+}
+
+.labled-switch .switch {
+    font-size: 0.75em;
+    vertical-align: middle;
+}

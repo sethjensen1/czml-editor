@@ -1,8 +1,8 @@
 import { Entity } from "cesium";
 import { PropertyField } from "./fields/property-fld";
-import { FeatureMetaData } from "./meta/polygon-meta";
 import cls from "../misc/cls";
 import { Tabs } from "../misc/tabs";
+import { FeatureMetaData } from "./meta/meta";
 
 export type FeatureEditorProps = {
     entity: Entity | null;
@@ -21,7 +21,7 @@ export function FeatureEditor({entity, metadata}: FeatureEditorProps) {
         return <>
             {pg.properties.map(prop => 
                 <PropertyField subject={subj} 
-                    key={prop.name} 
+                    key={`${entity?.id}.${prop.name}`} 
                     property={prop} />)}
         </>
     });

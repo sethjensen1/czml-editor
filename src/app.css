@@ -1,16 +1,3 @@
-:root {
-  --main-white: rgb(254, 254, 254);
-
-  --main-black: rgb(10, 10, 10);
-  --main-black-hover: rgb(74, 74, 74);
-  
-  --accent-color: #e75fff;
-  --selection-color: #00ffcc;
-
-  --link-color: rgb(0, 152, 255);
-  --link-hover-color: rgb(0, 131, 219);
-}
-
 #app {
   width: 100%;
   height: 100%;
@@ -34,11 +21,13 @@
   flex-shrink: 0;
   user-select: none;
 
+  background-color: #bfbfbf;
+
   width: 5px;
   cursor: ew-resize;
 }
 #resize-bar:hover {
-  background-color: #666;
+  background-color: var(--selection-color, #666);
 }
 
 #cesiumContainer {

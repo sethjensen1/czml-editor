@@ -1,0 +1,182 @@
+import { Cartesian3, Cartographic, ConstantPositionProperty, ConstantProperty, Entity, HeadingPitchRoll, PolygonHierarchy, Property, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer } from "cesium";
+import { getPickCoordinates } from "./pick-coordinates";
+
+export type DragEndCB = () => void;
+
+type PositionSetter = (cartesian3: Cartesian3, cartographic: Cartographic, deltaLon: number, deltaLat: number) => void;
+type PositionGetter = () => Cartesian3;
+
+export function attachController(controller: PositionDragController, entity: Entity, onDragEnd?: DragEndCB) {
+    let getter: PositionGetter | null = null;
+    let setter: PositionSetter | null = null;
+
+    // Billboards, Labels, Models should have position
+    if (entity.position && entity.position.isConstant) {
+        getter = () => {
+            return (entity.position as Property).getValue();
+        };
+        setter = (positionC3: Cartesian3) => {
+            (entity.position as ConstantPositionProperty).setValue(positionC3);
+        };
+    }
+    else if (entity.polygon && entity.polygon.hierarchy?.isConstant) {
+        const hierarchy: PolygonHierarchy = (entity.polygon.hierarchy as Property).getValue();
+
+        getter = () => {
+            return (entity.polygon!.hierarchy as Property).getValue().positions[0];
+        };
+        setter = (_cartesian3, _cartographic, deltaLon, deltaLat) => {
+            (entity.polygon!.hierarchy as ConstantProperty).setValue(moveHierarchy(hierarchy, deltaLon, deltaLat));
+        };
+    }
+    else if(entity.polyline && entity.polyline.positions?.isConstant) {
+        const positions: Cartographic[] = entity.polyline.positions.getValue().map(toCartographic);
+        getter = () => {
+            return (entity.polyline!.positions as Property).getValue()[0];
+        };
+        setter = (_cartesian3, _cartographic, deltaLon, deltaLat) => {
+            (entity.polyline!.positions as ConstantProperty).setValue(
+                positions.map(p => offsetCartographic(p, deltaLon, deltaLat))
+                    .map(toCartesian)
+            );
+        };
+    }
+    
+    if (getter && setter) {
+        return controller.attachToEntity(entity, getter, setter, onDragEnd);
+    }
+}
+
+
+type PositionDragControllerState = {
+    active: boolean;
+    entity: Entity;
+    initialPosition: Cartographic;
+
+    onDragEnd?: DragEndCB;
+
+    pick: (pick: any) => boolean;
+    getEntityPosition: () => Cartographic;
+    newPosition: (newPosition: Cartographic, ...lonlat: [number, number]) => void;
+};
+
+export class PositionDragController {
+    viewer: Viewer;
+    state: PositionDragControllerState | null = null;
+    screenSpaceEventHandler: ScreenSpaceEventHandler | null = null;
+
+    mouseDownPosition: Cartographic | null = null;
+    mouseDownEntityPosition: Cartographic | null = null;
+
+    constructor(viewer: Viewer) {
+        this.viewer = viewer;
+        // this.bindScreenSpaceEvents(viewer);
+    }
+    
+    bindScreenSpaceEvents(viewer: Viewer) {
+        if (!this.screenSpaceEventHandler) {
+            this.screenSpaceEventHandler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+            this.screenSpaceEventHandler.setInputAction(this.mouseMove, ScreenSpaceEventType.MOUSE_MOVE);
+            this.screenSpaceEventHandler.setInputAction(this.mouseDown, ScreenSpaceEventType.LEFT_DOWN);
+    
+            this.screenSpaceEventHandler.setInputAction((_e: any) => {
+                this.mouseDownPosition = null;
+                this.state && this.state.onDragEnd && this.state.onDragEnd();
+                this.enableDefaultControls();
+            }, ScreenSpaceEventType.LEFT_UP);
+        }
+    }
+
+    mouseMove(movement: ScreenSpaceEventHandler.MotionEvent) {
+        if (this.mouseDownPosition && this.mouseDownEntityPosition && this.state) {
+            const pc = getPickCoordinates(this.viewer, movement.endPosition)
+
+            if (pc) {
+                const mousePosition = Cartographic.fromCartesian(pc);
+        
+                const deltaLat = mousePosition.latitude - this.mouseDownPosition.latitude;
+                const deltaLon = mousePosition.longitude - this.mouseDownPosition.longitude;
+        
+                const entityNewPosition = new Cartographic(
+                    this.mouseDownEntityPosition.longitude + deltaLon,
+                    this.mouseDownEntityPosition.latitude + deltaLat,
+                    this.mouseDownEntityPosition.height
+                );
+        
+                this.state.newPosition(entityNewPosition, deltaLon, deltaLat);
+            }
+        }
+    }
+    
+    mouseDown(e: ScreenSpaceEventHandler.PositionedEvent) {
+        const pick = this.viewer.scene.pick(e.position);
+    
+        if (this.state && pick && this.state.pick(pick)) {
+            this.disableDefaultControls();
+
+            const cartesian = getPickCoordinates(this.viewer, e.position);
+
+            if (cartesian) {
+                this.mouseDownPosition = Cartographic.fromCartesian(cartesian);
+                this.mouseDownEntityPosition = this.state.getEntityPosition();
+            }
+        }
+    }
+    
+
+    attachToEntity(entity: Entity, getter: PositionGetter, setter: PositionSetter, onDragEnd?: DragEndCB) {
+        const state = {
+            active: false,
+            entity: entity,
+            initialPosition: Cartographic.fromCartesian(getter()),
+            pick: (pick: any) => {
+                return state.active && pick.id == entity;
+            },
+            getEntityPosition: function() {
+                return this.initialPosition;
+            },
+            newPosition: function(newPosition: Cartographic, ...lonlat: [number, number]) {
+                const cartesian = Cartographic.toCartesian(newPosition);
+                setter(cartesian, newPosition, ...lonlat);
+            },
+            onDragEnd: onDragEnd
+        };
+        this.state = state;
+
+        return this;
+    }
+
+    disableDefaultControls() {
+        this.viewer.scene.screenSpaceCameraController.enableInputs = false;
+    }
+    
+    enableDefaultControls() {
+        this.viewer.scene.screenSpaceCameraController.enableInputs = true;
+    }
+}
+
+function toCartographic(p: Cartesian3) {
+    return Cartographic.fromCartesian(p);
+}
+
+function toCartesian(p: Cartographic) {
+    return Cartographic.toCartesian(p);
+}
+
+function offsetCartographic(p: Cartographic, deltaLon: number, deltaLat: number) {
+    return new Cartographic(p.longitude + deltaLon, p.latitude + deltaLat, p.height);
+}
+
+function moveHierarchy(h: PolygonHierarchy, deltaLon: number, deltaLat: number) {
+    const newPositions = h.positions
+        .map(toCartographic)
+        .map(p => offsetCartographic(p, deltaLon, deltaLat))
+        .map(toCartesian);
+    
+    const holes = h.holes?.map(hh => moveHierarchy(hh, deltaLon, deltaLat)) as PolygonHierarchy[];
+
+    return new PolygonHierarchy(newPositions, holes);
+}
+
+// const hprNorth = new HeadingPitchRoll(0, -Math.PI / 2, -Math.PI / 2);
+// const hprEast = new HeadingPitchRoll(0, -Math.PI / 2, 0);

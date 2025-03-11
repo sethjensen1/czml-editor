@@ -1,28 +1,32 @@
-import { ConstantProperty, Entity, Property as CesiumProperty } from "cesium";
+import './entity-editor.css';
 
-import { polygonMetaData } from "./meta/polygon-meta";
+import { Entity } from "cesium";
+
 import { FeatureEditor } from "./feature-editor";
 import { DescriptionFld } from "./fields/description-fld";
 
-import './entity-editor.css';
+import { polygonMetaData } from "./meta/polygon-meta";
+import { billboardMetaData } from "./meta/billboard-meta";
+import { EntityData } from './fields/entity-data';
+import { useState } from 'preact/hooks';
 
 export type EntityEditorProps = {
     entity: Entity | null;
 }
 export function EntytyEditor({entity}: EntityEditorProps) {
 
-    const property = entity?.description as CesiumProperty;
-    const description = (property as ConstantProperty)?.valueOf();
+    const [showData, setShowData] = useState<boolean>(false);
 
-    const billboard = entity?.billboard;
     const label = entity?.label;
-    const model = entity?.model;
+    const billboard = entity?.billboard;
     // const path = entity?.path;
     const point = entity?.point;
-    const polygon = entity?.polygon;
     const polyline = entity?.polyline;
     const tileset = entity?.tileset;
+    const model = entity?.model;
 
+    const polygon = entity?.polygon;
+    
     if (!entity) {
         return null;
     }
@@ -30,6 +34,9 @@ export function EntytyEditor({entity}: EntityEditorProps) {
         <div id={'entity-editor'}>
             <h3>Selected Entity</h3>
             <DescriptionFld entity={entity} />
+            <EntityData entity={entity} {...{showData, setShowData}} />
+            {billboard !== undefined && <FeatureEditor 
+                entity={entity} metadata={billboardMetaData}/>}
             {polygon !== undefined && <FeatureEditor 
                 entity={entity} metadata={polygonMetaData}/>}
 
