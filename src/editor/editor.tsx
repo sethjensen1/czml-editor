@@ -6,7 +6,7 @@ import { EntytyEditor } from './entity-editor';
 
 import { UploadSection } from './upload-section';
 import { CreateEntitySection } from './create/create-section';
-import { Google3DSwitch } from './google3dSwitch';
+import { Google3DSwitch } from '../misc/google3dSwitch';
 import GeometryEditor from '../geometry-editor/geometry-editor';
 import { createContext } from 'preact';
 import { ViewerContext } from '../app';
@@ -54,7 +54,7 @@ export function Editor() {
                 <Google3DSwitch />
                 <CreateEntitySection {...{ onEntityCreated }} />
                 <EntitiesList {...{ entities, entity, selectEntity }} />
-                <EntytyEditor entity={entity} />
+                <EntytyEditor entity={entity} onChange={selectEntity} />
             </EditorContext>
         </div>
     );

@@ -30,7 +30,9 @@
   scrollbar-color: var(--accent-color) #a2a2a2;
 }
 
-
+.hidden {
+  display: none;
+}
 
 a {
   font-weight: 500;
@@ -45,8 +47,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
-  min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {

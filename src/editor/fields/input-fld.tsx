@@ -19,7 +19,8 @@ export function InputField({label, value, className, onChange}: InputFieldProps)
 
     return (
         <div class={cls('input-container', 'generic', className)}>
-            <input type={'text'} class={cls('input', (value !== undefined) && 'not-empty')} id={id} 
+            <input type={'text'} class={cls('input', !!value && 'not-empty')} 
+                id={id} 
                 value={value}
                 onChange={inputHandler}></input>
             {label && <label for={id} class="label">{label}</label>}

@@ -1,5 +1,7 @@
 import { JSX, useState } from 'preact/compat';
 
+import "./main-layout.css"
+
 export type MainLayoutProps = {
     sidebar: JSX.Element,
     mainArea: JSX.Element,
@@ -27,15 +29,15 @@ export function MainLayout({sidebar, mainArea}: MainLayoutProps) {
       window.addEventListener('mouseup', onMouseUp);
     }
   
-    return (<div id={'main-layout'}>
+    return (<div id={'main-layout'} class={'resizable-horizontal-layout'}>
       
-      <div id={'sidebar'} style={{width: `${sidebarWidth}px`}}>
+      <div id={'sidebar'} class={'left-side-area'} style={{width: `${sidebarWidth}px`}}>
         {sidebar}
       </div>
   
-      <div id={'resize-bar'} onMouseDown={resizeHandler}></div>
+      <div class={'resize-bar'} onMouseDown={resizeHandler}></div>
   
-      <div id={'main-area'}>
+      <div id={'main-area'} class={'right-side-area'}>
         {mainArea}
       </div>
   

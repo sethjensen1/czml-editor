@@ -3,8 +3,6 @@ import { ViewerContext } from "../../app";
 import { ConstantProperty, Entity, InfoBox, Property as CesiumProperty } from "cesium";
 import format from "html-format";
 
-import cls from "../../misc/cls";
-
 import "./description-fld.css";
 import { ModalPane } from "../../misc/modal-pane";
 
@@ -124,9 +122,11 @@ export function DescriptionFld({entity}: DescriptionFldProps) {
                 onChange={handleEditorInput}>{editorContent}</textarea>
         </ModalPane>
         <div class={'label'}>Description</div>
-        <button onClick={handlePreview}>Preview</button>
-        <span class={'spacer'}>&nbsp;</span>
-        <button onClick={handleEditClick} >Edit</button>
+        <div class={'sescription-fld-actions button-size-s'}>
+            <button onClick={handlePreview}>Preview</button>
+            <span class={'spacer'}>&nbsp;</span>
+            <button onClick={handleEditClick} >Edit</button>
+        </div>
     </div>);
 }
 

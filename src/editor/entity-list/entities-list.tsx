@@ -40,7 +40,7 @@ export function EntitiesList({entities, entity, selectEntity}: EntitiesListProps
             <div class={'scroll-container'}>
                 {$entities}
             </div>
-            <EntitySelectionSync {...{entity, selectEntity}} />
+            <EntitySelectionSync key={`${entity?.id}.selection-sync`} {...{entity, selectEntity}} />
         </div>
     );
 }

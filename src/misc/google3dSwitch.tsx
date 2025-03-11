@@ -2,7 +2,7 @@ import { useCallback, useContext, useState } from "preact/hooks";
 import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "../google/google3d";
 
 import { ViewerContext } from "../app";
-import { LabledSwitch } from "../misc/labled-switch";
+import { LabledSwitch } from "./labled-switch";
 
 export function Google3DSwitch() {
     const [google3d, setGoogle3d] = useState<boolean>(false);

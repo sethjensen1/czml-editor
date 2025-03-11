@@ -49,9 +49,12 @@ export function attachController(controller: PositionDragController, entity: Ent
 
 
 type PositionDragControllerState = {
-    active: boolean;
+    picked: boolean;
     entity: Entity;
     initialPosition: Cartographic;
+
+    mouseDownPosition: Cartographic | null;
+    mouseDownEntityPosition: Cartographic | null;
 
     onDragEnd?: DragEndCB;
 
@@ -65,42 +68,48 @@ export class PositionDragController {
     state: PositionDragControllerState | null = null;
     screenSpaceEventHandler: ScreenSpaceEventHandler | null = null;
 
-    mouseDownPosition: Cartographic | null = null;
-    mouseDownEntityPosition: Cartographic | null = null;
-
     constructor(viewer: Viewer) {
         this.viewer = viewer;
-        // this.bindScreenSpaceEvents(viewer);
     }
     
-    bindScreenSpaceEvents(viewer: Viewer) {
+    bindScreenSpaceEvents() {
         if (!this.screenSpaceEventHandler) {
-            this.screenSpaceEventHandler = new ScreenSpaceEventHandler(viewer.scene.canvas);
-            this.screenSpaceEventHandler.setInputAction(this.mouseMove, ScreenSpaceEventType.MOUSE_MOVE);
-            this.screenSpaceEventHandler.setInputAction(this.mouseDown, ScreenSpaceEventType.LEFT_DOWN);
-    
-            this.screenSpaceEventHandler.setInputAction((_e: any) => {
-                this.mouseDownPosition = null;
-                this.state && this.state.onDragEnd && this.state.onDragEnd();
-                this.enableDefaultControls();
-            }, ScreenSpaceEventType.LEFT_UP);
+            this.screenSpaceEventHandler = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
+            this.screenSpaceEventHandler.setInputAction(this.mouseMove.bind(this), ScreenSpaceEventType.MOUSE_MOVE);
+            this.screenSpaceEventHandler.setInputAction(this.mouseDown.bind(this), ScreenSpaceEventType.LEFT_DOWN);
+            this.screenSpaceEventHandler.setInputAction(this.mouseUp.bind(this), ScreenSpaceEventType.LEFT_UP);
+        }
+    }
+
+    unBindScreenSpaceEvents() {
+        if (this.screenSpaceEventHandler) {
+            this.screenSpaceEventHandler.destroy();
+            this.screenSpaceEventHandler = null;
+        }
+    }
+
+    mouseUp(_e: any) {
+        // Ignore clicks outside
+        if (this.state && this.state.picked) {
+            this.state.onDragEnd && this.state.onDragEnd();
+            this.reset();
         }
     }
 
     mouseMove(movement: ScreenSpaceEventHandler.MotionEvent) {
-        if (this.mouseDownPosition && this.mouseDownEntityPosition && this.state) {
+        if (this.state && this.state.mouseDownPosition && this.state.mouseDownEntityPosition) {
             const pc = getPickCoordinates(this.viewer, movement.endPosition)
 
             if (pc) {
                 const mousePosition = Cartographic.fromCartesian(pc);
         
-                const deltaLat = mousePosition.latitude - this.mouseDownPosition.latitude;
-                const deltaLon = mousePosition.longitude - this.mouseDownPosition.longitude;
+                const deltaLat = mousePosition.latitude - this.state.mouseDownPosition.latitude;
+                const deltaLon = mousePosition.longitude - this.state.mouseDownPosition.longitude;
         
                 const entityNewPosition = new Cartographic(
-                    this.mouseDownEntityPosition.longitude + deltaLon,
-                    this.mouseDownEntityPosition.latitude + deltaLat,
-                    this.mouseDownEntityPosition.height
+                    this.state.mouseDownEntityPosition.longitude + deltaLon,
+                    this.state.mouseDownEntityPosition.latitude + deltaLat,
+                    this.state.mouseDownEntityPosition.height
                 );
         
                 this.state.newPosition(entityNewPosition, deltaLon, deltaLat);
@@ -112,13 +121,15 @@ export class PositionDragController {
         const pick = this.viewer.scene.pick(e.position);
     
         if (this.state && pick && this.state.pick(pick)) {
+            this.state.picked = true;
+
             this.disableDefaultControls();
 
             const cartesian = getPickCoordinates(this.viewer, e.position);
 
             if (cartesian) {
-                this.mouseDownPosition = Cartographic.fromCartesian(cartesian);
-                this.mouseDownEntityPosition = this.state.getEntityPosition();
+                this.state.mouseDownPosition = Cartographic.fromCartesian(cartesian);
+                this.state.mouseDownEntityPosition = this.state.getEntityPosition();
             }
         }
     }
@@ -126,11 +137,13 @@ export class PositionDragController {
 
     attachToEntity(entity: Entity, getter: PositionGetter, setter: PositionSetter, onDragEnd?: DragEndCB) {
         const state = {
-            active: false,
+            picked: false,
             entity: entity,
             initialPosition: Cartographic.fromCartesian(getter()),
+            mouseDownPosition: null,
+            mouseDownEntityPosition: null,
             pick: (pick: any) => {
-                return state.active && pick.id == entity;
+                return pick.id === entity;
             },
             getEntityPosition: function() {
                 return this.initialPosition;
@@ -152,6 +165,11 @@ export class PositionDragController {
     
     enableDefaultControls() {
         this.viewer.scene.screenSpaceCameraController.enableInputs = true;
+    }
+
+    reset() {
+        this.state = null;
+        this.enableDefaultControls();
     }
 }
 

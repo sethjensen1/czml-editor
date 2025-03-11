@@ -1,13 +1,12 @@
-import { useCallback, useContext } from "preact/hooks";
-import { EditorContext } from "../editor";
+import { useCallback } from "preact/hooks";
 import { CreateEntityInputMode } from "../../geometry-editor/input-new-entity";
 
 type CreateBillboardProps = {
     active: boolean;
-    enabled: boolean;
+    disabled: boolean;
     setActiveType: (creationType: CreateEntityInputMode | undefined) => void;
 }
-export function CreateBillboard({active, enabled, setActiveType}: CreateBillboardProps) {
+export function CreateBillboard({active, disabled, setActiveType}: CreateBillboardProps) {
 
     // TODO: add controls for editing clickCreateController billboard options
     // const clickCreateController = useContext(EditorContext).clickCreateController;
@@ -22,7 +21,8 @@ export function CreateBillboard({active, enabled, setActiveType}: CreateBillboar
 
     return (
         <div className={'create-billboard'}>
-            { !active && <button disabled={enabled === false} 
+            { active && <div>Click in a map view to create billboard</div>}
+            { !active && <button disabled={disabled} 
                 onClick={handleCreate}>Create Billboard</button> }
             { active && <button onClick={handleCancel}>Cancel</button>}
         </div>

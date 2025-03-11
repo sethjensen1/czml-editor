@@ -5,29 +5,11 @@
   min-height: 100vh;
 }
 
-#main-layout {
-  display: flex;
-  flex-direction: row;
-}
 #sidebar {
   height: 100vh;
 }
-#main-content {
+#main-area {
   height: 100vh;
-  flex-grow: 1;
-}
-#resize-bar {
-  flex-grow: 0;
-  flex-shrink: 0;
-  user-select: none;
-
-  background-color: #bfbfbf;
-
-  width: 5px;
-  cursor: ew-resize;
-}
-#resize-bar:hover {
-  background-color: var(--selection-color, #666);
 }
 
 #cesiumContainer {

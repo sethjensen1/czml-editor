@@ -4,8 +4,9 @@ import { Entity } from "cesium";
 import { EditorContext } from "../editor";
 
 type CreatePolygonProps = {
+    active: boolean;
     disabled?: boolean;
-    setActiveType?: (subjectType: string | undefined) => void;
+    setActiveType?: (subjectType: 'polygon' | undefined) => void;
     onEntityCreated: (entity: Entity) => any;
 }
 export function CreatePolygon({onEntityCreated, disabled, setActiveType}: CreatePolygonProps) {

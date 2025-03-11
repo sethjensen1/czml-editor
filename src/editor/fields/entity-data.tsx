@@ -3,6 +3,7 @@ import Switch from "../../misc/switch";
 
 import "./entity-data.css";
 import { LabledSwitch } from "../../misc/labled-switch";
+import cls from "../../misc/cls";
 
 type EntityData = {
     entity: Entity;
@@ -23,18 +24,21 @@ export function EntityData({entity, showData, setShowData}: EntityData) {
     });
     
     return (
-    <div className={'entity-data'}>
+    <div className={cls('entity-data')}>
         <h4>Data</h4>
-        <LabledSwitch 
-            label={'Show data'} 
-            className={'show-entity-data'}
-            checked={showData} 
-            onChange={setShowData}
-        />
-        <table>
-            <tbody>
-                {$properties}
-            </tbody>
-        </table>
+        <div class={cls('data-empty-warning', dataProperties && 'hidden')}>Data is empty</div>
+        <div class={cls('data-display', !dataProperties && 'hidden')}>
+            <LabledSwitch 
+                label={'Show data'} 
+                className={'show-entity-data'}
+                checked={showData} 
+                onChange={setShowData}
+            />
+            <table class={'data-properties-table'}>
+                <tbody>
+                    {$properties}
+                </tbody>
+            </table>
+        </div>
     </div>)
 }
