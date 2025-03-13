@@ -1,9 +1,11 @@
 import { useCallback, useRef } from "preact/hooks";
 
 export type FileInputProps = {
+    name?: string;
+    accept?: string;
     onFile?: (file: File) => void;
 }
-export function FileInput({onFile}: FileInputProps) {
+export function FileInput({onFile, accept, name}: FileInputProps) {
 
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -16,11 +18,11 @@ export function FileInput({onFile}: FileInputProps) {
 
     return (
         <>
-            <button onClick={() => {inputRef.current?.click()}}>Load document</button>
+            <button onClick={() => {inputRef.current?.click()}}>{name || 'Load'}</button>
 
             <input ref={inputRef} onChange={handleFileSelect}
                 type="file" id="file" style={{display: 'none'}}
-                multiple accept=".kml, .kmz, .json, .czml, .czmz, .geojson"></input>
+                multiple accept={accept}></input>
         </>
     );
 }

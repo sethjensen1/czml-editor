@@ -1,7 +1,7 @@
 import { useCallback } from 'preact/hooks';
 import cls from '../../misc/cls';
 import './input-fld.css';
-import Switch from '../../misc/switch';
+import Switch from '../../misc/elements/switch';
 
 import './boolean-fld.css';
 

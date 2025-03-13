@@ -1,5 +1,5 @@
 import { JSX } from "preact";
-import cls from "./cls";
+import cls from "../cls";
 import Switch from "./switch";
 
 import "./labled-switch.css";

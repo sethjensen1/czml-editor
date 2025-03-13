@@ -1,7 +1,11 @@
 .input-container {
     position: relative;
     margin: 50px auto 25px 10px;
-    width: 300px;
+    width: var(--input-width, 300px);
+}
+
+.input-container.wide {
+    width: 100%;
 }
   
 .input-container input[type="text"] {

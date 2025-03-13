@@ -1,8 +1,8 @@
 import { Entity } from "cesium"
-import Switch from "../../misc/switch";
+import Switch from "../../misc/elements/switch";
 
 import "./entity-data.css";
-import { LabledSwitch } from "../../misc/labled-switch";
+import { LabledSwitch } from "../../misc/elements/labled-switch";
 import cls from "../../misc/cls";
 
 type EntityData = {

@@ -7,7 +7,9 @@
   --accent-color: #e75fff;
   --selection-color: #00ffcc;
 
+  /* #0098ff */
   --link-color: rgb(0, 152, 255);
+  /* #0083db */
   --link-hover-color: rgb(0, 131, 219);
 
   --button-bg: #555454;

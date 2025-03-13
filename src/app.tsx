@@ -3,7 +3,7 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 
 import { Viewer as CesiumViewer} from 'cesium'
 import { Editor } from './editor/editor';
-import { MainLayout } from './misc/main-layout';
+import { MainLayout } from './misc/elements/main-layout';
 import { useEffect, useState } from 'preact/hooks';
 
 import { createContext } from 'preact';

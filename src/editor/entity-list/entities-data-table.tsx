@@ -2,7 +2,7 @@ import { Entity } from "cesium";
 
 import "./entities-data-table.css"
 import { useCallback, useState } from "preact/hooks";
-import { ModalPane } from "../../misc/modal-pane";
+import { ModalPane } from "../../misc/elements/modal-pane";
 
 type EntitiesDataTableProps = {
     entities: Entity[];

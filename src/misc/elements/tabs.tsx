@@ -1,5 +1,5 @@
 import { JSX } from "preact/jsx-runtime";
-import cls from "./cls";
+import cls from "../cls";
 import { useState } from "preact/hooks";
 
 import './tabs.css';

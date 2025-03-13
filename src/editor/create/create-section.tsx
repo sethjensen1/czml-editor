@@ -1,4 +1,4 @@
-import { Section } from "../../misc/section";
+import { Section } from "../../misc/elements/section";
 
 import { Entity } from "cesium";
 import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
@@ -52,7 +52,7 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
         }
         
         console.log('New entity from click-create controller', entity);
-        
+
         if (viewer) {
             viewer.entities.add(entity);
         }

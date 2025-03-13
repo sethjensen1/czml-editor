@@ -1,5 +1,5 @@
 import { JSX } from "preact";
-import cls from "./cls";
+import cls from "../cls";
 import "./modal-pane.css"
 
 type ModalPaneProps = {

@@ -1,0 +1,37 @@
+.icon-lib-icon {
+    width: 10em;
+    height: 10em;
+
+    padding: 0.25em;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid var(--main-white, #666);
+    border-radius: 4px;
+
+    margin: 0.5em;
+}
+
+.icon-lib-icons {
+    display: flex;
+    flex-direction: row;
+}
+
+.icon-lib-icon.selected {
+    border: 2px solid var(--accent-color);
+}
+
+.icon-lib-icon img {
+    max-width: 100%;
+    max-height: 100%;
+
+    margin: auto;
+    display: block;
+}
+
+.icon-drop-zone {
+    padding: 1em;
+    border: 1px solid #ababab;
+}

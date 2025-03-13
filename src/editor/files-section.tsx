@@ -1,46 +1,46 @@
-import { Color, CompositeEntityCollection, CustomDataSource, CzmlDataSource, DataSource, Entity, EntityCollection, exportKml, exportKmlResultKml, GeoJsonDataSource, KmlDataSource, PinBuilder } from "cesium";
+import { Color, CustomDataSource, CzmlDataSource, Entity, exportKml, exportKmlResultKml, GeoJsonDataSource, KmlDataSource, PinBuilder } from "cesium";
 
 import { useCallback, useContext } from "preact/hooks";
 import { ViewerContext } from "../app";
-import { FileInput } from "../misc/file-input";
+import { FileInput } from "../misc/elements/file-input";
 import CzmlWriter from "../extra/czml-writer";
 
 export type CesiumDataSource = CzmlDataSource | KmlDataSource | GeoJsonDataSource;
 
-export type UploadSectionProps = {
+export type FilesSectionProps = {
     entities: Entity[];
-    setEntities: (entities: Entity[]) => any;
+    onLoad: (entities: Entity[], dataSource: CesiumDataSource, file: File) => any;
 }
-export function UploadSection({ entities, setEntities }: UploadSectionProps) {
+export function FilesSection({ entities, onLoad }: FilesSectionProps) {
 
     const viewer = useContext(ViewerContext);
 
-    const handleDSLoaded = useCallback((ds: CesiumDataSource) => {
+    const handleDSLoaded = useCallback((ds: CesiumDataSource, file: File) => {
         const newEntities = ds.entities.values;
-        setEntities([...entities, ...newEntities]);
-    }, [entities, setEntities]);
+        onLoad(newEntities, ds, file);
+    }, [onLoad]);
 
-    const handleCesiumDS = useCallback((ds: Promise<CesiumDataSource>) => {
+    const handleCesiumDS = useCallback((ds: Promise<CesiumDataSource>, file: File) => {
         if (viewer) {
             viewer.dataSources.add(ds);
-            ds.then(handleDSLoaded);
+            ds.then(ds => handleDSLoaded(ds, file));
         }
     }, [viewer, handleDSLoaded]);
 
     const fileSelected = useCallback((file: File) => {
         if (/vnd.google-earth/.test(file.type) || /\.kmz|\.kml/.test(file.name)) {
-            handleCesiumDS(KmlDataSource.load(file));
+            handleCesiumDS(KmlDataSource.load(file), file);
         }
         else if (/\.czml/.test(file.name)) {
             readTextFromFile(file).then(text => {
                 const czmljson = JSON.parse(text);
                 sanitizeSelfRef(czmljson);
-                handleCesiumDS(CzmlDataSource.load(czmljson));
+                handleCesiumDS(CzmlDataSource.load(czmljson), file);
             });
         }
         else if (file.type === 'application/geo+json') {
             readTextFromFile(file).then(text => {
-                handleCesiumDS(GeoJsonDataSource.load(JSON.parse(text)));
+                handleCesiumDS(GeoJsonDataSource.load(JSON.parse(text)), file);
             });
         }
         else {
@@ -72,7 +72,9 @@ export function UploadSection({ entities, setEntities }: UploadSectionProps) {
     return (
         <div class={'section upload-section'}>
             <h3><span>Upload / Download</span></h3>
-            <FileInput onFile={fileSelected} />
+            <FileInput name="Load Document" 
+                accept={".kml, .kmz, .json, .czml, .czmz, .geojson"} 
+                onFile={fileSelected} />
 
             <button onClick={handleDownloadKML}>Download as KML</button>
             {/* <button>Download as KMZ</button> */}

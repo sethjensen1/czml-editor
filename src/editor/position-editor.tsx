@@ -1,5 +1,5 @@
 import { Entity } from "cesium"
-import { LabledSwitch } from "../misc/labled-switch"
+import { LabledSwitch } from "../misc/elements/labled-switch"
 import { useCallback, useContext, useState } from "preact/hooks"
 import { EditorContext } from "./editor"
 import { attachController } from "../geometry-editor/position-drag-editor"

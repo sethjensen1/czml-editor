@@ -1,7 +1,7 @@
 import { Entity } from "cesium";
 import { PropertyField } from "./fields/property-fld";
 import cls from "../misc/cls";
-import { Tabs } from "../misc/tabs";
+import { Tabs } from "../misc/elements/tabs";
 import { FeatureMetaData } from "./meta/meta";
 
 export type FeatureEditorProps = {

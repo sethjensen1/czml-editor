@@ -4,7 +4,7 @@ import { ConstantProperty, Entity, InfoBox, Property as CesiumProperty } from "c
 import format from "html-format";
 
 import "./description-fld.css";
-import { ModalPane } from "../../misc/modal-pane";
+import { ModalPane } from "../../misc/elements/modal-pane";
 
 type DescriptionFldProps = {
     entity: Entity
