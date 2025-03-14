@@ -6,7 +6,7 @@ export const types = ['billboard', 'label', 'polyline', 'polygon', 'model'];
 type Constructor<T = any> = new (...args: any[]) => T;
 
 export type PropertyType = {
-    type: 'number' | 'boolean' | 'color' | 'material' | 'image-url' | 'distance-display-condition' | 'near-far-scalar';
+    type: 'number' | 'boolean' | 'string' | 'color' | 'material' | 'image-url' | 'distance-display-condition' | 'near-far-scalar';
 } 
 | PropertyTypeEnum 
 | PropertyTypeVector;

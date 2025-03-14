@@ -1,6 +1,6 @@
 import './entity-editor.css';
 
-import { Entity } from "cesium";
+import { ConstantProperty, Entity } from "cesium";
 
 import { FeatureEditor } from "./feature-editor";
 import { DescriptionFld } from "./fields/description-fld";
@@ -11,6 +11,8 @@ import { EntityData } from './fields/entity-data';
 import { useCallback, useState } from 'preact/hooks';
 import { InputField } from './fields/input-fld';
 import { PositionEditor } from './position-editor';
+import { labelMetadata } from './meta/label-meta';
+import { LabledSwitch } from '../misc/elements/labled-switch';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -26,7 +28,26 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
         }
     }, [entity, onChange]);
 
-    const label = entity?.label;
+    const [showLabel, setShowLabel] = useState<boolean>(entity?.label?.show?.getValue());
+    const handleShowLabelSwitch = useCallback((show: boolean) => {
+        if (entity && entity.label) {
+            const prop = entity.label.show;
+            
+            if (prop && prop.isConstant) {
+                (prop as ConstantProperty).setValue(show);
+            }
+            else if (prop === undefined) {
+                entity.label.show = new ConstantProperty(show);
+            }
+            else {
+                return;
+            }
+
+            setShowLabel(show);
+            onChange && onChange(entity);
+        }
+    }, [entity, onChange, setShowLabel]);
+
     const billboard = entity?.billboard;
 
     // const path = entity?.path;
@@ -36,6 +57,12 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
     const model = entity?.model;
 
     const polygon = entity?.polygon;
+
+    const applicableMeta = [
+        billboard && billboardMetaData, 
+        polygon && polygonMetaData, 
+        showLabel && labelMetadata
+    ].filter(m => !!m);
     
     if (!entity) {
         return null;
@@ -49,17 +76,15 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
             <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
                 onChange={handleNameInput} />
             
+            <LabledSwitch label={'Show label'} checked={showLabel} onChange={handleShowLabelSwitch} />
+            
             <DescriptionFld entity={entity} />
             
             <EntityData entity={entity} {...{showData, setShowData}} />
 
             <h4>Styling properties</h4>
 
-            {billboard !== undefined && <FeatureEditor 
-                entity={entity} metadata={billboardMetaData}/>}
-            
-            {polygon !== undefined && <FeatureEditor 
-                entity={entity} metadata={polygonMetaData}/>}
+            <FeatureEditor entity={entity} metadata={applicableMeta}/>
 
         </div>
     );

@@ -6,9 +6,15 @@
 }
 
 .tab-header {
+    font-weight: 500;
+    font-size: 1.1em;
     margin-left: 0.4em;
 }
 
+.tab-header:hover {
+    cursor: pointer;
+}
+
 .tab-header.selected {
-    border-bottom: 2px solid var(--link-color);
+    border-bottom: 2px solid var(--selection-color);
 }
