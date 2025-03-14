@@ -15,12 +15,12 @@ export type PropertyFieldProps = {
     property: PropertyMeta;
     onChange?: (value: any) => void;
 }
-export function PropertyField({subject, property: prop, onChange}: PropertyFieldProps) {
+export function PropertyField({subject, property: metaProperty, onChange}: PropertyFieldProps) {
 
-    const { name, type, title } = prop;
+    const { name, type, title } = metaProperty;
     const label = title || camelCaseToTitle(name);
 
-    const property = (subject as any)[prop.name] as CesiumProperty;
+    const property = (subject as any)[metaProperty.name] as CesiumProperty;
     const interpolated = property !== undefined && !property.isConstant;
 
     const value = (property as ConstantProperty)?.valueOf();
@@ -28,24 +28,29 @@ export function PropertyField({subject, property: prop, onChange}: PropertyField
     const [_oldVal, forceUpdate] = useState<any>();
 
     const changeHandler = useCallback((val: any) => {
+        if (metaProperty.type === 'number' && typeof val === 'string') {
+          val = val.includes('.') ? parseFloat(val) : parseInt(val);
+          val = Number.isNaN(val) ? undefined : val;
+        }
+
         if (property !== undefined && (property as any).setValue) {
             (property as ConstantProperty).setValue(val);
         }
-        else if (prop.type === 'enum') {
-            (subject as any)[prop.name] = new ConstantProperty(val);
+        else if (metaProperty.type === 'enum') {
+            (subject as any)[metaProperty.name] = new ConstantProperty(val);
         }
         else {
-            (subject as any)[prop.name] = val;
+            (subject as any)[metaProperty.name] = val;
         }
 
         onChange && onChange(val);
         forceUpdate(val);
 
-    }, [subject, property, prop, forceUpdate]);
+    }, [subject, property, metaProperty, forceUpdate]);
 
     if (interpolated) {
         return <div>
-        Cant't edit "{prop.name}" because its values are interpolated
+        Cant't edit "{metaProperty.name}" because its values are interpolated
         </div>
     }
     
@@ -57,7 +62,7 @@ export function PropertyField({subject, property: prop, onChange}: PropertyField
         return <BooleanField label={label} value={value} onChange={changeHandler}/>;
         
       case 'vector': {
-        const {size, targetClass, componentNames} = prop as PropertyTypeVector;
+        const {size, targetClass, componentNames} = metaProperty as PropertyTypeVector;
         return <VectorField label={label} value={value} 
           {...{size, targetClass, componentNames}}
           onChange={changeHandler}/>;
@@ -93,7 +98,7 @@ export function PropertyField({subject, property: prop, onChange}: PropertyField
 
       case 'enum':
         return <EnumField label={label} value={value} 
-          enumObj={prop.enum} ignore={prop.ignore} 
+          enumObj={metaProperty.enum} ignore={metaProperty.ignore} 
           onChange={changeHandler}/>;
 
       case 'color':
@@ -108,7 +113,7 @@ export function PropertyField({subject, property: prop, onChange}: PropertyField
 
       default:
         // @ts-ignore ignore, unreachable at the moment
-        console.warn(`Unsupported value type ${type} for field ${prop.name}`, value);
+        console.warn(`Unsupported value type ${type} for field ${metaProperty.name}`, value);
         return <InputField label={label} value={value} onChange={changeHandler}/>;
 
     }
