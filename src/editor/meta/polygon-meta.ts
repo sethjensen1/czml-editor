@@ -1,5 +1,5 @@
 import { ClassificationType, HeightReference } from "cesium";
-import { DistanceDisplayConditionAsVector, heightReferenceDescription, PropertyMeta } from "./meta";
+import { heightReferenceDescription, PropertyMeta } from "./meta";
 
 const geomProperties: PropertyMeta[] = [
     {name: 'height', type: 'number'}, 

@@ -30,7 +30,7 @@ export function FeatureEditor({entity, metadata}: FeatureEditorProps) {
     }).flat(1);
 
     return (
-        <div class={cls('feature-editor', `${featuresMeta[0].feature}-editor`)}>
+        <div class={cls('feature-editor')}>
             {propGroups && 
                 <Tabs>
                     {propGroups}

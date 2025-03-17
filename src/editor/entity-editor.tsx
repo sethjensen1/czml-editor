@@ -1,6 +1,6 @@
 import './entity-editor.css';
 
-import { ConstantProperty, Entity } from "cesium";
+import { ConstantProperty, Entity, LabelGraphics } from "cesium";
 
 import { FeatureEditor } from "./feature-editor";
 import { DescriptionFld } from "./fields/description-fld";
@@ -21,16 +21,30 @@ export type EntityEditorProps = {
 export function EntytyEditor({entity, onChange}: EntityEditorProps) {
 
     const [showData, setShowData] = useState<boolean>(false);
+    const [_name, forceNameUpdate] = useState<string | undefined>(entity?.name);
+
     const handleNameInput = useCallback((value: string) => {
         if (entity) {
             entity.name = value;
             onChange && onChange(entity);
+            forceNameUpdate(value);
         }
-    }, [entity, onChange]);
+    }, [entity, onChange, forceNameUpdate]);
 
     const [showLabel, setShowLabel] = useState<boolean>(entity?.label?.show?.getValue());
     const handleShowLabelSwitch = useCallback((show: boolean) => {
-        if (entity && entity.label) {
+        if (!entity) {
+            return;
+        }
+
+        if (!entity.label && show) {
+            entity.label = new LabelGraphics({
+                show: true,
+                text: entity.name
+            });
+        }
+
+        if (entity.label) {
             const prop = entity.label.show;
             
             if (prop && prop.isConstant) {
