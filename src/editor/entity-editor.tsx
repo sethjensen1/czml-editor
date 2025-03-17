@@ -1,6 +1,6 @@
 import './entity-editor.css';
 
-import { ConstantProperty, Entity, LabelGraphics } from "cesium";
+import { ConstantPositionProperty, ConstantProperty, Entity, LabelGraphics } from "cesium";
 
 import { FeatureEditor } from "./feature-editor";
 import { DescriptionFld } from "./fields/description-fld";
@@ -38,6 +38,11 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
         }
 
         if (!entity.label && show) {
+            if (!entity.position && entity.polygon) {
+                const center = entity.polygon.hierarchy?.getValue().boundingSphere.center;
+                entity.position = new ConstantPositionProperty(center);
+            }
+
             entity.label = new LabelGraphics({
                 show: true,
                 text: entity.name
