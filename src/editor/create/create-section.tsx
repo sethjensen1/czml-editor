@@ -2,7 +2,7 @@ import { Section } from "../../misc/elements/section";
 
 import { Entity } from "cesium";
 import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
-import { CreatePolygon } from "./create-polygon";
+import { CreateMultyPointFeature } from "./create-multy-point";
 import { CreateBillboard } from "./create-billboard";
 import { EditorContext } from "../editor";
 import { CreateEntityInputMode } from "../../geometry-editor/input-new-entity";
@@ -51,8 +51,6 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
             clickCreateController.unSubscribeToEvents();
         }
         
-        console.log('New entity from click-create controller', entity);
-
         if (viewer) {
             viewer.entities.add(entity);
         }
@@ -71,24 +69,24 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
         }
     }, [clickCreateController, handleEntityCreatedByClickRef]);
 
-    /* <Section id={'create-entity'} className={'create-section'} header={'Create entities'}> */
-    /* </Section> */
-
     const billboardActive = activeType === CreateEntityInputMode.billboard;
     const polygonActive = activeType === 'polygon';
+    const polylineActive = activeType === 'polyline';
 
     const allEnabled = activeType === undefined;
     const billboardDisabled = !allEnabled && !billboardActive;
     const polygonDisabled = !allEnabled  && !polygonActive;
+    const polylineDisabled = !allEnabled  && !polylineActive;
 
     return (
-        <div class={'section create-section'}>
-            <h3><span>Create entities</span></h3>
+        <Section id={'create-entity'} className={'create-section'} header={'Create entities'}>
             <CreateBillboard active={billboardActive}
                 disabled={billboardDisabled} setActiveType={handleActiveTypeSet} />
-            <CreatePolygon active={polygonActive} 
+            <CreateMultyPointFeature type={'polyline'} active={polylineActive} 
+                disabled={polylineDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
+            <CreateMultyPointFeature type={'polygon'} active={polygonActive} 
                 disabled={polygonDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
-        </div>
+        </Section>
     );
 }
 

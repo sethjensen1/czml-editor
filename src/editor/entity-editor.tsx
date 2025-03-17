@@ -13,6 +13,7 @@ import { InputField } from './fields/input-fld';
 import { PositionEditor } from './position-editor';
 import { labelMetadata } from './meta/label-meta';
 import { LabledSwitch } from '../misc/elements/labled-switch';
+import { polylineMetaData } from './meta/polyline-meta';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -42,6 +43,11 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
                 const center = entity.polygon.hierarchy?.getValue().boundingSphere.center;
                 entity.position = new ConstantPositionProperty(center);
             }
+            
+            if (!entity.position && entity.polyline) {
+                const center = entity.polyline.positions?.getValue()[0];
+                entity.position = new ConstantPositionProperty(center);
+            }
 
             entity.label = new LabelGraphics({
                 show: true,
@@ -69,8 +75,9 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
 
     const billboard = entity?.billboard;
 
-    // const path = entity?.path;
     const point = entity?.point;
+
+    // const path = entity?.path;
     const polyline = entity?.polyline;
     const tileset = entity?.tileset;
     const model = entity?.model;
@@ -78,7 +85,8 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
     const polygon = entity?.polygon;
 
     const applicableMeta = [
-        billboard && billboardMetaData, 
+        billboard && billboardMetaData,
+        polyline && polylineMetaData,
         polygon && polygonMetaData, 
         showLabel && labelMetadata
     ].filter(m => !!m);
