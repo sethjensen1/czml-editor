@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useState } from 'preact/hooks';
 import cls from '../../misc/cls';
 import './vector-fld.css';
 import { InputField } from './input-fld';
@@ -11,7 +11,7 @@ export type VectorFieldProps = {
     size?: number;
     targetClass?: any;
     componentNames?: string[];
-    onChange?: (value: string) => void;
+    onChange?: (value: any) => void;
 }
 export function VectorField({label, value, size, targetClass, componentNames, onChange}: VectorFieldProps) {
 
@@ -29,10 +29,10 @@ export function VectorField({label, value, size, targetClass, componentNames, on
         const notNull = numArray.every(v => v && !isNaN(v));
         const newVal = notNull && (targetClass && new targetClass(...numArray) || numArray);
         
-        if (newVal && onChange) {
-            console.log(newVal);
-            onChange(newVal);
-        }
+        onChange && onChange(notNull ? newVal : undefined);
+        // if (newVal && onChange) {
+        //     onChange(newVal);
+        // }
     }, [scratchValues, targetClass, onChange]);
 
     const componentFields = scratchValues.map((componentVal, i) => {

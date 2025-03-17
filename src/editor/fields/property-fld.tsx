@@ -2,7 +2,7 @@ import camelCaseToTitle from '../../misc/cammelToTitle';
 import { InputField } from './input-fld';
 import { BooleanField } from './boolean-fld';
 import { ColorField } from './color-fld';
-import { Property as CesiumProperty, ConstantProperty, DistanceDisplayCondition, NearFarScalar } from "cesium";
+import { Property as CesiumProperty, ConstantProperty, DistanceDisplayCondition, NearFarScalar, Property } from "cesium";
 import { BillboardGraphics, LabelGraphics, PolygonGraphics, PolylineGraphics } from 'cesium';
 import { useCallback, useState } from 'preact/hooks';
 import { EnumField } from './enum-fld';
@@ -21,9 +21,14 @@ export function PropertyField({subject, property: metaProperty, onChange}: Prope
     const label = title || camelCaseToTitle(name);
 
     const property = (subject as any)[metaProperty.name] as CesiumProperty;
-    const interpolated = property !== undefined && !property.isConstant;
+    const interpolated = property !== undefined && property instanceof Property && !property.isConstant;
 
+    
     const value = (property as ConstantProperty)?.valueOf();
+    
+    if (name === 'text') {
+      console.log(property, value);
+    }
 
     const [_oldVal, forceUpdate] = useState<any>();
 
@@ -49,12 +54,16 @@ export function PropertyField({subject, property: metaProperty, onChange}: Prope
     }, [subject, property, metaProperty, forceUpdate]);
 
     if (interpolated) {
+        console.log('interpolated property', property);
         return <div>
         Cant't edit "{metaProperty.name}" because its values are interpolated
         </div>
     }
     
     switch (type) {
+      case 'string':
+        return <InputField label={label} value={value} onChange={changeHandler}/>;
+
       case 'number':
         return <InputField label={label} value={value} onChange={changeHandler}/>;
       
