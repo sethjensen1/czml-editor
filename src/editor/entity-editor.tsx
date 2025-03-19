@@ -51,6 +51,7 @@ const showLabel = entity?.label?.show?.getValue();
         billboard && billboardMetaData,
         polyline && polylineMetaData,
         polygon && polygonMetaData, 
+        model && modelMetaData,
         showLabel && labelMetadata
     ].filter(m => !!m);
     
