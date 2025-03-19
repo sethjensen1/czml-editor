@@ -12,8 +12,11 @@ import { useCallback, useState } from 'preact/hooks';
 import { InputField } from './fields/input-fld';
 import { PositionEditor } from './position-editor';
 import { labelMetadata } from './meta/label-meta';
-import { LabledSwitch } from '../misc/elements/labled-switch';
 import { polylineMetaData } from './meta/polyline-meta';
+import { EntityLabel } from './entity-label';
+import { EditMultipointGeometry } from './multipoint-geometry';
+import { modelMetaData } from './meta/model-meta';
+import { OrientationEditor } from './orientation-editor';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -32,48 +35,8 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
         }
     }, [entity, onChange, forceNameUpdate]);
 
-    const [showLabel, setShowLabel] = useState<boolean>(entity?.label?.show?.getValue());
-    const handleShowLabelSwitch = useCallback((show: boolean) => {
-        if (!entity) {
-            return;
-        }
-
-        if (!entity.label && show) {
-            if (!entity.position && entity.polygon) {
-                const center = entity.polygon.hierarchy?.getValue().boundingSphere.center;
-                entity.position = new ConstantPositionProperty(center);
-            }
-            
-            if (!entity.position && entity.polyline) {
-                const center = entity.polyline.positions?.getValue()[0];
-                entity.position = new ConstantPositionProperty(center);
-            }
-
-            entity.label = new LabelGraphics({
-                show: true,
-                text: entity.name
-            });
-        }
-
-        if (entity.label) {
-            const prop = entity.label.show;
-            
-            if (prop && prop.isConstant) {
-                (prop as ConstantProperty).setValue(show);
-            }
-            else if (prop === undefined) {
-                entity.label.show = new ConstantProperty(show);
-            }
-            else {
-                return;
-            }
-
-            setShowLabel(show);
-            onChange && onChange(entity);
-        }
-    }, [entity, onChange, setShowLabel]);
-
     const billboard = entity?.billboard;
+const showLabel = entity?.label?.show?.getValue();
 
     const point = entity?.point;
 
@@ -103,7 +66,7 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
             <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
                 onChange={handleNameInput} />
             
-            <LabledSwitch label={'Show label'} checked={showLabel} onChange={handleShowLabelSwitch} />
+            <EntityLabel entity={entity} onChange={onChange} />
             
             <DescriptionFld entity={entity} />
             
