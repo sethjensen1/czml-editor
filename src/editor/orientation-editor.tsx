@@ -10,7 +10,7 @@ export function OrientationEditor({entity, onChange}: OrientationEditorProps) {
     
     const orientation = orientationProperty?.isConstant && orientationProperty.getValue();
 
-    console.log('orientation', orientation);
+    console.log('orientation', orientation, onChange);
 
     return <div>
         TODO: Add orientation editing

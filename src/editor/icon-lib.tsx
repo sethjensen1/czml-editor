@@ -1,7 +1,7 @@
 import { Resource } from "cesium";
 import { InputField } from "./fields/input-fld";
 import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
-import { EditorContext, SharedResourcesContext } from "./editor";
+import { SharedResourcesContext } from "./editor";
 import cls from "../misc/cls";
 
 import "./icon-lib.css";

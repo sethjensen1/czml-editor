@@ -1,4 +1,4 @@
-import { Cartesian3, Cartographic, ConstantPositionProperty, ConstantProperty, Entity, HeadingPitchRoll, PolygonHierarchy, Property, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer } from "cesium";
+import { Cartesian3, Cartographic, ConstantPositionProperty, ConstantProperty, Entity, PolygonHierarchy, Property, ScreenSpaceEventHandler, ScreenSpaceEventType, Viewer } from "cesium";
 import { getPickCoordinates } from "./pick-coordinates";
 
 export type DragEndCB = () => void;

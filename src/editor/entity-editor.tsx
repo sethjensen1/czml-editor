@@ -39,9 +39,9 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
     const showLabel = entity?.label?.show?.getValue();
 
     // TODO: add metadata
-    const point = entity?.point;
-    const path = entity?.path;
-    const tileset = entity?.tileset;
+    // const point = entity?.point;
+    // const path = entity?.path;
+    // const tileset = entity?.tileset;
     const model = entity?.model;
     
     const polyline = entity?.polyline;

@@ -36,6 +36,13 @@ export function mapBillboardImageResources(entities: Entity[]) {
 }
 
 export function referenceProperties(entities: Entity[], collection: EntityCollection) {
+    
+    // @ts-ignore
+    const _entities = entities;
+    // @ts-ignore
+    const _collection = collection;
+
+    throw new Error('Not implemented');
 
     // if(imageUriToEntityIds.has(resource.url) && resource.isDataUri) {
     //     const tagetId = imageUriToEntityIds.get(resource.url)![0]

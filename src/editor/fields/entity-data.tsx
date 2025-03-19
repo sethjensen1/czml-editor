@@ -1,5 +1,4 @@
 import { Entity } from "cesium"
-import Switch from "../../misc/elements/switch";
 
 import "./entity-data.css";
 import { LabledSwitch } from "../../misc/elements/labled-switch";

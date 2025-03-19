@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "preact/hooks";
+import { useCallback, useContext} from "preact/hooks";
 import { CreateEntityInputMode } from "../../geometry-editor/input-new-entity";
 import { FileInput } from "../../misc/elements/file-input";
 import { EditorContext } from "../editor";
@@ -28,7 +28,10 @@ export function CreateModel({active, disabled, setActiveType}: CreateModelProps)
 
     return (
         <div className={'create-model'}>
-            { !active && <FileInput name={'Add model'} onFile={handleUpload}  accept=".gltf, .glb" />}
+            { !active && <FileInput disabled={disabled} 
+                                    name={'Add model'} 
+                                    onFile={handleUpload} 
+                                    accept=".gltf, .glb" />}
 
             { active && <div>Click in a map view to set model position</div>}
             { active && <button onClick={handleCancel}>Cancel</button>}

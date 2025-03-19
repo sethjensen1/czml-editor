@@ -18,8 +18,11 @@ export function switchGoogleGlobeOn(viewer: Cesium.Viewer) {
 };
 
 export function switchGoogleGlobeOff (viewer: Cesium.Viewer) {
+    // @ts-ignore
     viewer.scene.primitives._primitives
+        // @ts-ignore
         .filter(p => p._basePath && p._basePath.startsWith('https://tile.googleapis.com/'))
+        // @ts-ignore
         .forEach(p => {
             viewer.scene.primitives.remove(p);
         });

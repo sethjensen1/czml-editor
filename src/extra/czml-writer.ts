@@ -263,11 +263,15 @@ function encodeRectanglePositions(v: Rectangle) {
 }
 
 function encodeNodeTransformations(v: any) {
+    // @ts-ignore
+    const _v = v;
     console.warn("Node transformations are not supported");
     return null;
 }
 
 function encodeArticulations(v: any) {
+    // @ts-ignore
+    const _v = v;
     console.warn("Articulations are not supported");
     return null;
 }
@@ -488,7 +492,7 @@ function writePolyline(polyline: PolylineGraphics) {
     writeConstantProperty(polyline.width, result, 'width');
     writeConstantProperty(polyline.granularity, result, 'granularity');
     writeMaterialProperty(polyline.material, result, 'material', 'polyline');
-    writeConstantProperty(polyline.followSurface, result, 'followSurface');
+    // writeConstantProperty(polyline.followSurface, result, 'followSurface');
     writeConstantProperty(polyline.shadows, result, 'shadows', enumEncoder(ShadowMode));
     writeMaterialProperty(polyline.depthFailMaterial, result, 'depthFailMaterial', 'polyline');
     writeConstantProperty(polyline.distanceDisplayCondition, result, 'distanceDisplayCondition', encodeDistanceDisplayCondition);
