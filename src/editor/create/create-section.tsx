@@ -7,6 +7,7 @@ import { CreateBillboard } from "./create-billboard";
 import { EditorContext } from "../editor";
 import { CreateEntityInputMode } from "../../geometry-editor/input-new-entity";
 import { ViewerContext } from "../../app";
+import { CreateModel } from "./create-model";
 
 
 type GeometryEditorMode = 'polygon' | 'polyline'
@@ -86,6 +87,8 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
                 disabled={polylineDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
             <CreateMultyPointFeature type={'polygon'} active={polygonActive} 
                 disabled={polygonDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
+            <CreateModel active={activeType === CreateEntityInputMode.model}
+                disabled={!allEnabled} setActiveType={handleActiveTypeSet} />
         </Section>
     );
 }
