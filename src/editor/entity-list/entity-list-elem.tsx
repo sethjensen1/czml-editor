@@ -3,6 +3,21 @@ import { types } from "../meta/meta";
 import { useCallback, useRef } from "preact/hooks";
 
 import cls from "../../misc/cls";
+import "./type-icon.css";
+
+import billboardSvg from "../../assets/billboard.svg";
+import labelSvg from "../../assets/label.svg";
+import polygonSvg from "../../assets/polygon.svg";
+import polylineSvg from "../../assets/polyline.svg";
+import folderSvg from "../../assets/folder.svg";
+
+const typeIcons = {
+    billboard: billboardSvg,
+    label: labelSvg,
+    polygon: polygonSvg,
+    polyline: polylineSvg,
+    folder: folderSvg,
+}
 
 type EntityListElementProps = {
     entity: Entity;
@@ -37,9 +52,7 @@ export function EntityListElement({entity, selectedEntity, entities, typeStatist
             class={cls('entity', selected && 'selected')}
             onClick={handleClick}>
     
-            <span class={'entity-type'}>
-            {`${isFolder ? 'folder' : type}`}
-            </span> 
+            <TypeIcon type={isFolder ? 'folder' : type} />
     
             <span>&nbsp;</span>
             
@@ -48,4 +61,16 @@ export function EntityListElement({entity, selectedEntity, entities, typeStatist
             </span> 
         </div>
     );
+}
+
+type TypeIconProps = {
+    type?: string;
+}
+function TypeIcon({type}: TypeIconProps) {
+
+    const icon = type && typeIcons[type as keyof typeof typeIcons];
+
+    return <span class={'entity-type'}>
+        <img alt={type} src={icon} />
+    </span> 
 }

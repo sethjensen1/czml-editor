@@ -4,16 +4,15 @@ import { PropertyMeta } from "./meta";
 const appearanceProps: PropertyMeta[] = [
     {name: 'text', type: 'string'},
 
+    {name: 'pixelOffset', type: 'vector', size: 2, targetClass: Cartesian2},
+
     {name: 'fillColor', type: 'color'},
     {name: 'outlineWidth', type: 'number'},
     {name: 'outlineColor', type: 'color'},
     {name: 'style', type: 'enum', enum: LabelStyle},
     
-    
     {name: 'horizontalOrigin', type: 'enum', enum: HorizontalOrigin},
     {name: 'verticalOrigin', type: 'enum', enum: VerticalOrigin},
-    
-    {name: 'pixelOffset', type: 'vector', size: 2, targetClass: Cartesian2},
 
     {name: 'font', type: 'string'},
     {name: 'scale', type: 'number'},
