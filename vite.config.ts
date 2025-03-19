@@ -7,6 +7,7 @@ const cesiumSource = "node_modules/cesium/Build/Cesium";
 const cesiumBaseUrl = "cesiumStatic";
 
 export default defineConfig({
+  base: '/czml-editor/',
   plugins: [
     preact(),
     viteStaticCopy({
@@ -21,4 +22,5 @@ export default defineConfig({
   define: {
     CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl),
   },
+  
 })
