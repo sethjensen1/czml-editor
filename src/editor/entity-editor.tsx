@@ -1,6 +1,6 @@
 import './entity-editor.css';
 
-import { ConstantPositionProperty, ConstantProperty, Entity, LabelGraphics } from "cesium";
+import { Entity} from "cesium";
 
 import { FeatureEditor } from "./feature-editor";
 import { DescriptionFld } from "./fields/description-fld";
@@ -36,16 +36,18 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
     }, [entity, onChange, forceNameUpdate]);
 
     const billboard = entity?.billboard;
-const showLabel = entity?.label?.show?.getValue();
+    const showLabel = entity?.label?.show?.getValue();
 
+    // TODO: add metadata
     const point = entity?.point;
-
-    // const path = entity?.path;
-    const polyline = entity?.polyline;
+    const path = entity?.path;
     const tileset = entity?.tileset;
     const model = entity?.model;
-
+    
+    const polyline = entity?.polyline;
     const polygon = entity?.polygon;
+
+    const isMultiPoint = polygon || polyline ;
 
     const applicableMeta = [
         billboard && billboardMetaData,
@@ -64,9 +66,13 @@ const showLabel = entity?.label?.show?.getValue();
             
             <PositionEditor key={`${entity.id}.position`} entity={entity} />
 
+            {isMultiPoint && <EditMultipointGeometry entity={entity} onChange={onChange} />}
+
+            <OrientationEditor entity={entity} onChange={onChange} />
+
             <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
                 onChange={handleNameInput} />
-            
+
             <EntityLabel entity={entity} onChange={onChange} />
             
             <DescriptionFld entity={entity} />

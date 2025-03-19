@@ -4,7 +4,8 @@ import { getPickCoordinates } from "./pick-coordinates";
 export enum CreateEntityInputMode {
     billboard,
     model,
-    label, 
+    label,
+    point,
 }
 
 export class CreateEntityByClickController {

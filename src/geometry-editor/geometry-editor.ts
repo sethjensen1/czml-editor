@@ -54,6 +54,7 @@ export default class GeometryEditor {
     
     _type: GeometryType | null = null;
     _entityGeometryProperty: GeometryProperty | null = null;
+    
     entityOptions: any | null;
 
     screenSpaceEventHandler: Cesium.ScreenSpaceEventHandler | null = null;
@@ -105,10 +106,9 @@ export default class GeometryEditor {
 
         this.entity = entity;
         
-        // @ts-ignore
-        this._oldGeometry = this.entity[this._type][this._entityGeometryProperty].getValue();
+        this._oldGeometry = this._getGeometryPropertyValue();
         this._geometryAsControlPoints();
-        
+
         // @ts-ignore
         this.entity[this._type][this._entityGeometryProperty] = new Cesium.CallbackProperty(this._geometryCallback.bind(this), false);
 
@@ -220,6 +220,7 @@ export default class GeometryEditor {
         this._entityGeometryProperty = null;
         GeometryEditor.controlPointsDisplay.entities.removeAll();
         this._controlPoints = [];
+        this._middlePoints = [];
     }
 
     destroy() {
@@ -395,7 +396,7 @@ export default class GeometryEditor {
 
     _mouseMove(e: Cesium.ScreenSpaceEventHandler.MotionEvent) {
         if (this._mouseDownPosition && this._activeControlPoint) {
-            // this.viewer.camera.pickEllipsoid(e.endPosition, this.viewer.scene.globe.ellipsoid);
+
             const pc = this.viewer && getPickCoordinates(this.viewer, e.endPosition);
             if (!pc) {
                 return;
@@ -412,8 +413,8 @@ export default class GeometryEditor {
                 this._mouseDownEntityPosition!.height
             );
 
-            // @ts-ignore
-            this._activeControlPoint.position = Cesium.Cartographic.toCartesian(entityNewPosition);
+            const cartesian = Cesium.Cartographic.toCartesian(entityNewPosition);
+            this._activeControlPoint.position = new Cesium.ConstantPositionProperty(cartesian);
         }
     }
 
@@ -425,7 +426,7 @@ export default class GeometryEditor {
 
         const isControlPoint = this._controlPoints.includes(subj);
 
-        const middlePointIndex = this._middlePoints.indexOf(subj);
+        const middlePointIndex = this._middlePoints.findIndex(mp => mp.id === subj.id);
         const isMiddlePoint = middlePointIndex >= 0;
 
         if ( isControlPoint || isMiddlePoint ) {
@@ -449,8 +450,11 @@ export default class GeometryEditor {
 
             if (isMiddlePoint) {
 
-                const li = middlePointIndex;
+                const li = middlePointIndex % this._controlPoints.length;
                 const ri = (middlePointIndex + 1) % this._controlPoints.length;
+
+                console.log('middlePointIndex', middlePointIndex, li, ri);
+
                 const leftCP  = this._controlPoints[li];
                 const rightCP = this._controlPoints[ri];
 
@@ -494,17 +498,17 @@ export default class GeometryEditor {
     }
 
     __labels() {
-        this._controlPoints.forEach((p, i) => {
+        this._controlPoints.forEach((p, cpi) => {
             p.label = new Cesium.LabelGraphics({
-                text: 'cp' + i,
+                text: 'cp' + cpi,
                 eyeOffset: new Cesium.Cartesian3(0.0, 0.0, -25.0),
                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM
             });
         });
 
-        this._middlePoints.forEach((p, i) => {
+        this._middlePoints.forEach((p, mpi) => {
             p.label = new Cesium.LabelGraphics({
-                text: 'mp' + i,
+                text: 'mp' + mpi,
                 eyeOffset: new Cesium.Cartesian3(0.0, 0.0, -25.0),
                 verticalOrigin: Cesium.VerticalOrigin.BOTTOM
             });
