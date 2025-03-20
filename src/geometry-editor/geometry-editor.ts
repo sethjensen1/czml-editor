@@ -426,7 +426,7 @@ export default class GeometryEditor {
 
         const isControlPoint = this._controlPoints.includes(subj);
 
-        const middlePointIndex = this._middlePoints.findIndex(mp => mp.id === subj.id);
+        const middlePointIndex = this._middlePoints.findIndex(mp => mp.id === subj?.id);
         const isMiddlePoint = middlePointIndex >= 0;
 
         if ( isControlPoint || isMiddlePoint ) {
