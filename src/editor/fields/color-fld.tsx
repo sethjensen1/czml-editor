@@ -27,18 +27,30 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
 
     const handleH = useCallback((val: number) => {
         seth(val * 360.0);
-        onChange && onChange(CesiumColor.fromHsl(val, s / 100.0, l / 100.0))
-    }, [s, l, seth, onChange]);
+        var clr = CesiumColor.fromHsl(val, s / 100.0, l / 100.0);
+        if (alpha) {
+            clr = clr.withAlpha(a);
+        }
+        onChange && onChange(clr);
+    }, [s, l, a, alpha, seth, onChange]);
 
     const handleS = useCallback((val: number) => {
         sets(val * 100.0);
-        onChange && onChange(CesiumColor.fromHsl(h / 360.0, val, l / 100.0))
-    }, [h, l, sets, onChange]);
+        var clr = CesiumColor.fromHsl(h / 360.0, val, l / 100.0);
+        if (alpha) {
+            clr = clr.withAlpha(a);
+        }
+        onChange && onChange(clr)
+    }, [h, l, a, alpha, sets, onChange]);
 
     const handleL = useCallback((val: number) => {
         setl(val * 100.0);
-        onChange && onChange(CesiumColor.fromHsl(h / 360.0, s / 100.0, val))
-    }, [h, s, setl, onChange]);
+        var clr = CesiumColor.fromHsl(h / 360.0, s / 100.0, val);
+        if (alpha) {
+            clr = clr.withAlpha(a);
+        }
+        onChange && onChange(clr)
+    }, [h, s, a, alpha, setl, onChange]);
 
     const handleA = useCallback((val: number) => {
         seta(val);
@@ -71,12 +83,23 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
     const lm = `hsl(${h.toFixed(0)}, ${s.toFixed(2)}%, 50%)`;
     const lt = `hsl(${h.toFixed(0)}, ${s.toFixed(2)}%, 100%)`;
 
-    const color = CesiumColor.fromHsl(h / 360.0, s / 100.0, l / 100.0);
+    var color = CesiumColor.fromHsl(h / 360.0, s / 100.0, l / 100.0);
+    if (alpha) {
+        color = color.withAlpha(a);
+    }
 
     const af = `hsla(${h.toFixed(0)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%, 0)`;
     const at = `hsla(${h.toFixed(0)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%, 1)`;
 
     const previewStyle = {backgroundColor: `hsla(${h.toFixed(0)}, ${s.toFixed(2)}%, ${l.toFixed(2)}%, ${a.toFixed(3)})`};
+
+    let alphaHex = color && (Math.floor(color.alpha * 255).toString(16));
+    alphaHex = `${alphaHex.length === 1 ? '0' : ''}${alphaHex}`
+    
+    const colorHex = value && (color?.toCssHexString()) || 'none';
+
+    const alphaStr = (value && alpha && !colorHex.match(/#[\d,a-f]{8}/i)) ? alphaHex : '';
+    const inputText = colorHex + alphaStr;
 
     return (
     <div class="input-container color-fld button-size-s">
@@ -109,10 +132,13 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
         </div>
 
         <div class={'color-text-input'}>
-            <DebounceInput value={value && color?.toCssHexString() || 'undefined'}
+            <DebounceInput value={inputText}
                 debounceTimeout={500}
                 debouncedOnChange={handleTextInput} />
-            <button class={'reset-value'} onClick={() => {onChange && onChange(undefined)}}><img src={imgUndefColor}></img></button>
+            <button class={'reset-value'} 
+                onClick={() => {onChange && onChange(undefined)}}>
+                    <img src={imgUndefColor}></img>
+            </button>
         </div>
         
         <div class="underline"></div>
