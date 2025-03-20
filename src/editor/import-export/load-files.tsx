@@ -1,20 +1,15 @@
-import { Color, CustomDataSource, CzmlDataSource, Entity, exportKml, exportKmlResultKml, GeoJsonDataSource, KmlDataSource, PinBuilder } from "cesium";
-
+import { Color, CzmlDataSource, Entity, GeoJsonDataSource, KmlDataSource, PinBuilder } from "cesium";
+import { CesiumDataSource } from "./files-section";
+import { FileInput } from "../../misc/elements/file-input";
 import { useCallback, useContext } from "preact/hooks";
-import { ViewerContext } from "../app";
-import { FileInput } from "../misc/elements/file-input";
-import CzmlWriter from "../extra/czml-writer";
+import { ViewerContext } from "../../app";
 
-export type CesiumDataSource = CzmlDataSource | KmlDataSource | GeoJsonDataSource;
-
-export type FilesSectionProps = {
-    entities: Entity[];
+type LoadFilesProps = {
     onLoad: (entities: Entity[], dataSource: CesiumDataSource, file: File) => any;
 }
-export function FilesSection({ entities, onLoad }: FilesSectionProps) {
-
+export function LoadFiles({onLoad}: LoadFilesProps) {
     const viewer = useContext(ViewerContext);
-
+    
     const handleDSLoaded = useCallback((ds: CesiumDataSource, file: File) => {
         const newEntities = ds.entities.values;
         onLoad(newEntities, ds, file);
@@ -49,47 +44,12 @@ export function FilesSection({ entities, onLoad }: FilesSectionProps) {
 
     }, [handleCesiumDS]);
 
-    const handleDownloadKML = useCallback(() => {
-        const ds = new CustomDataSource("export");
-        entities.forEach(e => ds.entities.add(e));
-        exportKml({ entities: ds.entities }).then(result => {
-            const mime = 'application/vnd.google-earth.kml+xml';
-            const kml = `data:${mime};charset=utf-8,` + encodeURIComponent((result as exportKmlResultKml).kml);
-
-            downloadAsFile(kml, 'document.kml');
-        });
-    }, [entities]);
-
-    const handleDownloadCZML = useCallback(() => {
-        const writer = new CzmlWriter({ separateResources: false });
-        entities.forEach(entity => writer.addEntity(entity));
-
-        const czml = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(writer.toJSON()));
-        downloadAsFile(czml, 'document.czml');
-        
-    }, [entities]);
-
     return (
-        <div class={'section upload-section'}>
-            <h3><span>Upload / Download</span></h3>
-            <FileInput name="Load Document" 
+        <FileInput name="Load Document" 
                 accept={".kml, .kmz, .json, .czml, .czmz, .geojson"} 
                 onFile={fileSelected} />
-
-            <button onClick={handleDownloadKML}>Download as KML</button>
-            {/* <button>Download as KMZ</button> */}
-            <button onClick={handleDownloadCZML}>Download as CZML</button>
-            {/* <button>Download as CZMZ</button> */}
-        </div>
     );
-}
 
-function downloadAsFile(content: string, filename: string) {
-    const link = document.createElement('A') as HTMLAnchorElement;
-    link.href = content;
-    link.download = filename;
-    link.click();
-    link.remove();
 }
 
 function readTextFromFile(file: File): Promise<string> {

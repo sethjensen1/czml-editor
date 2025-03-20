@@ -1,3 +1,60 @@
+.picker-layout {
+    display: flex;
+}
+
+.picker-preview-container {
+    flex: 0 1 4em;
+    margin-top: 0.6em; 
+    margin-right: 1em;
+}
+
+.picker-sliders {
+    flex: 1 0 auto;
+}
+
+.color-fld .preview {
+    width: 100%; 
+    height: 100%;
+}
+.color-fld .preview-none {
+    width: 100%; 
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #ccc;
+    color: var(--main-black);
+}
+.color-fld .preview-none img {
+    width: 50%; 
+    height: 50%;
+}
+
+.color-fld .checker {
+    height: 4em; 
+    width: 4em;
+    background-image: url('../../assets/checker.png');
+}
+
 .input-container.color-fld .label {
     position: relative;
+}
+
+.color-text-input input {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    flex-grow: 1;
+}
+
+.color-text-input input:focus {
+    outline: none;
+    border: none;
+}
+
+.color-text-input {
+    padding-bottom: 0.25em;
+    display: flex;
 }

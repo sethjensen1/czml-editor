@@ -10,6 +10,8 @@ import { VectorField } from './vector-fld';
 import { DistanceDisplayConditionAsVector, NearFarAsVector, PropertyMeta, PropertyTypeVector } from '../meta/meta';
 import { ImageUrlField } from './imageurl-fld';
 
+import "./property-fld.css"
+
 export type PropertyFieldProps = {
     subject: PolygonGraphics | PolylineGraphics | BillboardGraphics | LabelGraphics
     property: PropertyMeta;
@@ -111,11 +113,13 @@ export function PropertyField({subject, property: metaProperty, onChange}: Prope
           onChange={changeHandler}/>;
 
       case 'color':
-        return <ColorField label={label} value={value} onChange={changeHandler}/>;
+        return <ColorField label={label} value={value} 
+            alpha={metaProperty.noAlpha !== true} onChange={changeHandler}/>;
       
       case 'material':
         const val = value?.color?.valueOf();
-        return <ColorField label={label} value={val} onChange={changeHandler}/>;
+        return <ColorField label={label} value={val} 
+            alpha={metaProperty.noAlpha !== true} onChange={changeHandler}/>;
       
       case 'image-url':
         return <ImageUrlField label={label} value={value} onChange={changeHandler}/>;

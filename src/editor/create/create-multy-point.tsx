@@ -11,7 +11,7 @@ type CreateMultyPointFeatureProps = {
     setActiveType?: (subjectType: 'polygon' | 'polyline' | undefined) => void;
     onEntityCreated: (entity: Entity) => any;
 }
-export function CreateMultyPointFeature({type, onEntityCreated, disabled, setActiveType}: CreateMultyPointFeatureProps) {
+export function CreateMultyPointFeature({type, active, onEntityCreated, disabled, setActiveType}: CreateMultyPointFeatureProps) {
     const viewer = useContext(ViewerContext);
     const geometryEditor = useContext(EditorContext).geometryEditor;
 
@@ -46,8 +46,14 @@ export function CreateMultyPointFeature({type, onEntityCreated, disabled, setAct
 
     return (
         <div class={`create-${type}`}>
-            { !creationMode && <button disabled={disabled === true} 
-                onClick={handleCreate}>Create {type === 'polygon' ? 'Polygon' : 'Polyline'}</button> }
+            { active && <div>
+                Click in a 3d map view to add points to {type} geometry.
+                {type === 'polygon' && <div> You need at least 3 points for polygon.</div>}
+                {type === 'polyline' && <div> You need at least 2 points for polyline.</div>}
+                </div>}
+            { !creationMode && <button disabled={disabled === true} onClick={handleCreate}>
+                Add {type === 'polygon' ? 'Polygon' : 'Polyline'} 
+            </button> }
             { creationMode && <button onClick={handleSave}>Save</button>}
             { creationMode && <button onClick={handleCancel}>Cancel</button>}
         </div>
