@@ -4,7 +4,7 @@ import { Entity } from 'cesium';
 import { EntitiesList } from './entity-list/entities-list';
 import { EntytyEditor } from './entity-editor';
 
-import { FilesSection } from './files-section';
+import { FilesSection } from './import-export/files-section';
 import { CreateEntitySection } from './create/create-section';
 import { Google3DSwitch } from '../misc/elements/google3dSwitch';
 import GeometryEditor from '../geometry-editor/geometry-editor';

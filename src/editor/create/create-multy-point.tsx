@@ -51,8 +51,9 @@ export function CreateMultyPointFeature({type, active, onEntityCreated, disabled
                 {type === 'polygon' && <div> You need at least 3 points for polygon.</div>}
                 {type === 'polyline' && <div> You need at least 2 points for polyline.</div>}
                 </div>}
-            { !creationMode && <button disabled={disabled === true} 
-                onClick={handleCreate}>Add {type === 'polygon' ? 'Polygon' : 'Polyline'}</button> }
+            { !creationMode && <button disabled={disabled === true} onClick={handleCreate}>
+                Add {type === 'polygon' ? 'Polygon' : 'Polyline'} 
+            </button> }
             { creationMode && <button onClick={handleSave}>Save</button>}
             { creationMode && <button onClick={handleCancel}>Cancel</button>}
         </div>
