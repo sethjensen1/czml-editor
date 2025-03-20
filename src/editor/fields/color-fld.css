@@ -32,7 +32,6 @@
     height: 50%;
 }
 
-
 .color-fld .checker {
     height: 4em; 
     width: 4em;
@@ -41,4 +40,21 @@
 
 .input-container.color-fld .label {
     position: relative;
+}
+
+.color-text-input input {
+    background-color: transparent;
+    outline: none;
+    border: none;
+    flex-grow: 1;
+}
+
+.color-text-input input:focus {
+    outline: none;
+    border: none;
+}
+
+.color-text-input {
+    padding-bottom: 0.25em;
+    display: flex;
 }

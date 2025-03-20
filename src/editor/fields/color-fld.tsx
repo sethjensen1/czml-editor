@@ -1,11 +1,12 @@
 import { useCallback, useState } from "preact/hooks";
-import { Color as CesiumColor } from "cesium";
+import { Color as CesiumColor, Color } from "cesium";
 
 import './color-fld.css';
 import { GradientSlider } from "../../misc/elements/hue-slider";
 
 import imgUndefColor from '../../assets/undef-color.svg';
 import imgChecker from '../../assets/checker-s.png';
+import { DebounceInput } from "../../misc/elements/debounced-input";
 
 export type ColorFieldProps = {
     value?: CesiumColor;
@@ -14,6 +15,8 @@ export type ColorFieldProps = {
     onChange: (value: CesiumColor | undefined) => void;
 };
 export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
+
+    // TODO: Use array or object for color state
 
     const [_h, _s, _l] = value && rgb2hsl(value.red, value.green, value.blue) || [0, 0.5, 0.5];
 
@@ -42,6 +45,25 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
         onChange && onChange(CesiumColor.fromHsl(h / 360.0, s / 100.0, l / 100.0).withAlpha(val))
     }, [h, s, l, seta, onChange]);
 
+    const handleTextInput = useCallback((val: string) => {
+        if (val === '' || val === 'none' || val === 'undefined') {
+            onChange && onChange(undefined);
+        }
+        
+        const newcolor = Color.fromCssColorString(val);
+        if (newcolor) {
+            onChange && onChange(newcolor);
+            
+            const [h, s, l] = rgb2hsl(newcolor.red, newcolor.green, newcolor.blue);
+            seth(h);
+            seth(s);
+            seth(l);
+            
+            seta(newcolor.alpha);
+        }
+        
+    }, [seth, sets, setl, seta, onChange]);
+
     const sf = `hsl(${h.toFixed(0)}, 0%, ${l.toFixed(2)}%)`;
     const st = `hsl(${h.toFixed(0)}, 100%, ${l.toFixed(2)}%)`;
 
@@ -56,7 +78,7 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
 
     const previewStyle = {backgroundColor: `hsla(${h.toFixed(0)}, ${s.toFixed(2)}%, ${l.toFixed(2)}%, ${a.toFixed(3)})`};
 
-  return (
+    return (
     <div class="input-container color-fld button-size-s">
         {label && <label class={'label'}>{label}</label>}
 
@@ -69,7 +91,6 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
                         <img src={imgUndefColor}/>
                     </div>}
                 </div>
-                <button onClick={() => {onChange && onChange(undefined)}}>Unset</button>
             </div>
             <div class={'picker-sliders'}>
                 <GradientSlider value={h / 360.0} onChange={handleH} />
@@ -80,18 +101,23 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
                 <GradientSlider value={l / 100.0} gradient={[lf, lm, lt]}
                     onChange={handleL} />
                 
-                {alpha && <GradientSlider value={a} gradient={[af, at]} backgroundImage={imgChecker}
+                {alpha && <GradientSlider value={a} gradient={[af, at]} 
+                    backgroundImage={imgChecker}
                     onChange={handleA} />}
 
             </div>
-
         </div>
 
-        <div>{value && color?.toCssHexString() || 'undefined'}</div>
+        <div class={'color-text-input'}>
+            <DebounceInput value={value && color?.toCssHexString() || 'undefined'}
+                debounceTimeout={500}
+                debouncedOnChange={handleTextInput} />
+            <button class={'reset-value'} onClick={() => {onChange && onChange(undefined)}}><img src={imgUndefColor}></img></button>
+        </div>
         
         <div class="underline"></div>
     </div>
-  );
+    );
 }
 
 function rgb2hsl(r: number, g: number, b: number) {

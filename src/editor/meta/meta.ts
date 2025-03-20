@@ -6,10 +6,22 @@ export const types = ['billboard', 'label', 'polyline', 'polygon', 'model'];
 type Constructor<T = any> = new (...args: any[]) => T;
 
 export type PropertyType = {
-    type: 'number' | 'boolean' | 'string' | 'color' | 'material' | 'image-url' | 'distance-display-condition' | 'near-far-scalar';
+    type: 'number' | 'boolean' | 'string' | 'image-url' | 'distance-display-condition' | 'near-far-scalar';
 } 
 | PropertyTypeEnum 
-| PropertyTypeVector;
+| PropertyTypeVector
+| MaterialType
+| ColorType;
+
+export type ColorType = {
+    type: 'color';
+    noAlpha?: boolean;
+}
+
+export type MaterialType = {
+    type: 'material';
+    noAlpha?: boolean;
+}
 
 export type PropertyTypeEnum = {
     type: 'enum';

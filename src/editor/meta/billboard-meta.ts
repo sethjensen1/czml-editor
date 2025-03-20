@@ -27,7 +27,7 @@ const extraProps: PropertyMeta[] = [
     {name: 'rotation', type: 'number'},
     {name: 'alignedAxis', type: 'vector'},
     
-    {name: 'color', type: 'color'},
+    {name: 'color', type: 'color', noAlpha: true},
     {name: 'imageSubRegion', type: 'vector', size: 4,
         componentNames: ['x', 'y', 'width', 'height']},
         
