@@ -4,6 +4,7 @@ import { useCallback, useRef } from "preact/hooks";
 
 import cls from "../../misc/cls";
 import "./type-icon.css";
+import "./entity-list-elem.css";
 
 import billboardSvg from "../../assets/billboard.svg";
 import labelSvg from "../../assets/label.svg";

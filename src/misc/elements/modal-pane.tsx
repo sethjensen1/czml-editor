@@ -1,10 +1,10 @@
-import { JSX } from "preact";
+import { ComponentChildren } from "preact";
 import cls from "../cls";
 import "./modal-pane.css"
 
 type ModalPaneProps = {
     visible: boolean;
-    children: JSX.Element | JSX.Element[];
+    children: ComponentChildren;
     className?: string;
 }
 export function ModalPane({visible, children, className}: ModalPaneProps) {

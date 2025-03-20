@@ -18,6 +18,7 @@ import { EditMultipointGeometry } from './multipoint-geometry';
 import { modelMetaData } from './meta/model-meta';
 import { OrientationEditor } from './orientation-editor';
 import { Section } from '../misc/elements/section';
+import { Subsection } from '../misc/elements/subsection';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -63,24 +64,28 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
     }
     return (
         <Section id={'entity-editor'} header={'Selected Entity'} >
-            <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
-                onChange={handleNameInput} />
-            
-            <PositionEditor key={`${entity.id}.position`} entity={entity} />
+            <Subsection key={entity.id + '.subsection-common'}>
+                <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
+                    onChange={handleNameInput} />
+                
+                <PositionEditor key={`${entity.id}.position`} entity={entity} />
 
-            {isMultiPoint && <EditMultipointGeometry entity={entity} onChange={onChange} />}
+                {isMultiPoint && <EditMultipointGeometry entity={entity} onChange={onChange} />}
 
-            <OrientationEditor entity={entity} onChange={onChange} />
+                <OrientationEditor entity={entity} onChange={onChange} />
 
-            <EntityLabel entity={entity} onChange={onChange} />
-            
-            <DescriptionFld entity={entity} />
-            
-            <EntityData entity={entity} {...{showData, setShowData}} />
+                <EntityLabel entity={entity} onChange={onChange} />
+                
+                <DescriptionFld entity={entity} />
+                
+                <EntityData entity={entity} {...{showData, setShowData}} />
+            </Subsection>
 
-            <h4>Styling properties</h4>
+            <Subsection key={entity.id + '.subsection-styling'}>
+                <h4>Styling properties</h4>
+                <FeatureEditor entity={entity} metadata={applicableMeta}/>
+            </Subsection>
 
-            <FeatureEditor entity={entity} metadata={applicableMeta}/>
         </Section>
     );
 }

@@ -1,12 +1,11 @@
-import { JSX } from "preact/jsx-runtime";
-import { ReactElement } from "preact/compat";
 import { useState } from "preact/hooks";
 
 import cls from "../cls";
 
 import './tabs.css';
+import { ComponentChildren, VNode } from "preact";
 
-type TabFC = ReactElement<TabProps>;
+type TabFC = VNode<TabProps>;
 
 export type TabsProps = {
     children: TabFC[];
@@ -42,7 +41,7 @@ export function Tabs({children}: TabsProps) {
 
 export type TabProps = {
     title: string;
-    children: JSX.Element | JSX.Element[];
+    children: ComponentChildren;
 }
 export function Tab({children}: TabProps) {
     return <>

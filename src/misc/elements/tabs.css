@@ -5,14 +5,22 @@
     display: block;
 }
 
+.tab-bar {
+    margin-right: 0.5em;
+}
+
 .tab-header {
     font-weight: 500;
     font-size: 1.1em;
-    margin-left: 0.4em;
+    padding: 0.2em;
+    margin-right: 0.5em;
+
+    display: inline-block;
 }
 
 .tab-header:hover {
     cursor: pointer;
+    color: var(--selection-color);
 }
 
 .tab-header.selected {

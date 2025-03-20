@@ -14,7 +14,3 @@
 #entity-list .scroll-container {
     overflow-y: auto;
 }
-
-.entity.selected {
-    color: var(--link-color);
-}

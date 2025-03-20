@@ -17,3 +17,14 @@
     width: 7em;
     display: inline-block;
 }
+
+#entity-editor .subsection {
+    margin-left: -0.25em;
+    margin-right: 0.25em;
+    padding: 0.1em 0 1em 0.5em;
+    margin-bottom: 1em;
+}
+
+#entity-editor .subsection > .input-container:first-child {
+    margin-top: 20px;
+}

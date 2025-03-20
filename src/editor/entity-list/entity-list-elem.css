@@ -1,0 +1,11 @@
+.entity.selected {
+    background-color: rgba(var(--link-color-val), 0.2);
+    color: var(--main-black);
+}
+
+.entity {
+    padding: 0.25em 0 0.25em 0;
+
+    border-bottom: 1px dashed #222;
+}
+
