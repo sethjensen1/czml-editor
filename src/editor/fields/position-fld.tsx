@@ -32,22 +32,18 @@ export function PositionFld({entity, onChange}: PositionFldProps) {
     }
 
     return (
-    <div>
+    <div class={'position-fld'}>
         <div class={'label'}>
             <span>Latitude</span>
-            <span>&nbsp;</span>
             <span>Longitude</span>
-            <span>&nbsp;</span>
             <span>Height(m)</span>
         </div>
-        <div>
+        <div class={'value'}>
             <span>{`${latitude?.toFixed(6)}`}</span>
-            <span>&nbsp;</span>
             <span>{`${longitude?.toFixed(6)}`}</span>
-            <span>&nbsp;</span>
             <span>{`${height?.toFixed(3)}`}</span>
         </div>
-        <InputField label={'height'} value={'' + height?.toFixed(3)} onChange={handleHeight}  />
+        <InputField label={'height'} value={'' + height?.toFixed(3)} onChange={handleHeight} />
     </div>
     );
 }

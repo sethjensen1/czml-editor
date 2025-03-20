@@ -4,11 +4,18 @@ import { useCallback, useContext, useState } from "preact/hooks"
 import { EditorContext } from "./editor"
 import { attachController } from "../geometry-editor/position-drag-editor"
 import { PositionFld } from "./fields/position-fld"
+import { ViewerContext } from "../app"
 
 type PositionEditorProps = {
     entity: Entity
 }
 export function PositionEditor({entity}: PositionEditorProps) {
+
+    const viewer = useContext(ViewerContext);
+
+    const handleFlyTo = useCallback(() => {
+        entity && viewer?.flyTo(entity, {duration: 1});
+    }, [viewer, entity]);
 
     const moveController = useContext(EditorContext).positionDragController;
 
@@ -47,8 +54,8 @@ export function PositionEditor({entity}: PositionEditorProps) {
     }, [entity])
 
     return (
-        <div>
-            <h4>Position</h4>
+        <div class={'entity-position'}>
+            <h4><span>Position</span> <button onClick={handleFlyTo} class={'fly-to-button'}>Flyto</button></h4>
             <PositionFld entity={entity} onChange={handleFldChange} />
             <LabledSwitch checked={active} onChange={handleActiveChange}
                 label={'Drag to move'}></LabledSwitch>

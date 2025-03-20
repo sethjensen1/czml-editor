@@ -1,0 +1,19 @@
+.entity-position h4>span {
+    display: inline-block;
+    padding-right: 1em;
+}
+
+.fly-to-button {
+    font-size: 0.5em;
+    vertical-align: middle;
+}
+
+.position-fld .label span {
+    width: 7em;
+    display: inline-block;
+}
+
+.position-fld .value span {
+    width: 7em;
+    display: inline-block;
+}
