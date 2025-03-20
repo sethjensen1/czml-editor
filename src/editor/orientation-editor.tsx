@@ -1,4 +1,6 @@
-import { Entity } from "cesium";
+import { ConstantProperty, Entity, Quaternion } from "cesium";
+import { VectorField } from "./fields/vector-fld";
+import { useCallback } from "preact/hooks";
 
 type OrientationEditorProps = {
     entity: Entity;
@@ -7,12 +9,25 @@ type OrientationEditorProps = {
 export function OrientationEditor({entity, onChange}: OrientationEditorProps) {
 
     const orientationProperty = entity.orientation;
-    
-    const orientation = orientationProperty?.isConstant && orientationProperty.getValue();
 
-    console.log('orientation', orientation, onChange);
+    const propVal = orientationProperty?.isConstant && orientationProperty.getValue();
+
+    const handleChange = useCallback((v: Quaternion) => {
+
+        if (orientationProperty) {
+            if (orientationProperty.isConstant) {
+                (orientationProperty as ConstantProperty).setValue(v);
+            }
+        }
+        else {
+            entity.orientation = new ConstantProperty(v);
+        }
+
+    }, [entity, orientationProperty, onChange]);
 
     return <div>
-        TODO: Add orientation editing
+        <h4>Orientation</h4>
+
+        <VectorField targetClass={Quaternion} size={4} value={propVal} onChange={handleChange} />
     </div>
 }
