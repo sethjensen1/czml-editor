@@ -2,6 +2,7 @@ import { CzmlDataSource, Entity, GeoJsonDataSource, KmlDataSource } from "cesium
 
 import { LoadFiles } from "./load-files";
 import { ExportFiles } from "./export-files";
+import { Section } from "../../misc/elements/section";
 
 export type CesiumDataSource = CzmlDataSource | KmlDataSource | GeoJsonDataSource;
 
@@ -12,11 +13,10 @@ export type FilesSectionProps = {
 export function FilesSection({ entities, onLoad }: FilesSectionProps) {
 
     return (
-        <div class={'section upload-section'}>
-            <h3><span>Upload / Download</span></h3>
+        <Section header={'Import / Export'} className={'upload-section'}>
             <LoadFiles onLoad={onLoad} />
             <ExportFiles entities={entities} />
-        </div>
+        </Section>
     );
 }
 
