@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'preact/hooks';
 import cls from '../../misc/cls';
-import './vector-fld.css';
 import { InputField } from './input-fld';
+import './vector-fld.css';
 
 const defaultComponentNames = ['x', 'y', 'z', 'w'];
 
@@ -9,11 +9,12 @@ export type VectorFieldProps = {
     label?: string;
     value?: any[];
     size?: number;
+    inline?: boolean;
     targetClass?: any;
     componentNames?: string[];
     onChange?: (value: any) => void;
 }
-export function VectorField({label, value, size, targetClass, componentNames, onChange}: VectorFieldProps) {
+export function VectorField({label, value, size, targetClass, componentNames, inline, onChange}: VectorFieldProps) {
 
     const vectorSize = value?.length || componentNames?.length || size || 3;
     const valueArray = Array.from({length: vectorSize}, (_v, i) => value?.[i] || null);
@@ -30,9 +31,7 @@ export function VectorField({label, value, size, targetClass, componentNames, on
         const newVal = notNull && (targetClass && new targetClass(...numArray) || numArray);
         
         onChange && onChange(notNull ? newVal : undefined);
-        // if (newVal && onChange) {
-        //     onChange(newVal);
-        // }
+
     }, [scratchValues, targetClass, onChange]);
 
     const componentFields = scratchValues.map((componentVal, i) => {
@@ -47,9 +46,9 @@ export function VectorField({label, value, size, targetClass, componentNames, on
     });
 
     return (
-        <div class={cls('input-container', 'vector-fld')}>
+        <div class={cls('input-container', 'vector-fld', inline && 'inline')}>
             <div>{label}</div>
-            <div>
+            <div class={cls('components', inline && 'inline')}>
             {componentFields}
             </div>
         </div>

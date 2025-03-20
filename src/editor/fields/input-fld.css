@@ -1,6 +1,6 @@
 .input-container {
     position: relative;
-    margin: 50px auto 25px 10px;
+    margin: 35px auto 25px 0;
     width: var(--input-width, 300px);
 }
 

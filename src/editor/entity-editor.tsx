@@ -17,6 +17,7 @@ import { EntityLabel } from './entity-label';
 import { EditMultipointGeometry } from './multipoint-geometry';
 import { modelMetaData } from './meta/model-meta';
 import { OrientationEditor } from './orientation-editor';
+import { Section } from '../misc/elements/section';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -61,17 +62,15 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
         return null;
     }
     return (
-        <div id={'entity-editor'}>
-            <h3>Selected Entity</h3>
+        <Section id={'entity-editor'} header={'Selected Entity'} >
+            <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
+                onChange={handleNameInput} />
             
             <PositionEditor key={`${entity.id}.position`} entity={entity} />
 
             {isMultiPoint && <EditMultipointGeometry entity={entity} onChange={onChange} />}
 
             <OrientationEditor entity={entity} onChange={onChange} />
-
-            <InputField label={'Entity name'} key={`${entity.id}.name`} value={entity.name} 
-                onChange={handleNameInput} />
 
             <EntityLabel entity={entity} onChange={onChange} />
             
@@ -82,7 +81,6 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
             <h4>Styling properties</h4>
 
             <FeatureEditor entity={entity} metadata={applicableMeta}/>
-
-        </div>
+        </Section>
     );
 }

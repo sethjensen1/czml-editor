@@ -1,11 +1,11 @@
-import { JSX } from "preact";
+import { ComponentChildren } from "preact";
 import cls from "../cls";
 
 export type SectionProps = {
     header: string;
     id?: string;
     className?: string;
-    children: (JSX.Element | boolean)[];
+    children: ComponentChildren;
 }
 export function Section({header, id, className, children}: SectionProps) {
 

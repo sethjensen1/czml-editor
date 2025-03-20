@@ -2,3 +2,16 @@
     font-size: 0.75em;
     margin: 30px auto 15px 10px;
 }
+
+.vector-fld.inline {
+    margin: 0 0 15px 0;
+}
+
+.components.inline {
+    display: flex;
+    flex-direction: row;
+}
+
+.components.inline .component-fld {
+    margin: 5px 10px 5px auto;
+}
