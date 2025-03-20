@@ -8,15 +8,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "predeploy" : "yarn build",
-    "deploy" : "gh-pages -d dist"
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@types/cesium": "^1.70.4",
     "cesium": "^1.126.0",
     "html-format": "^1.1.7",
-    "preact": "^10.25.4",
-    "slider-color-picker": "^0.2.3"
+    "preact": "^10.25.4"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.1",
