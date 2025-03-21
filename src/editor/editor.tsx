@@ -74,7 +74,7 @@ export function Editor() {
                 <SharedResourcesContext value={{resources, setResources}}>
                     <CreateEntitySection {...{ onEntityCreated }} />
                     <EntitiesList {...{ entities, entity, selectEntity }} />
-                    <EntytyEditor entity={entity} onChange={selectEntity} />
+                    <EntytyEditor entity={entity} />
                 </SharedResourcesContext>
             </EditorContext>
         </div>

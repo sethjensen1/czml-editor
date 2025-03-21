@@ -33,9 +33,12 @@ export function EntitiesList({entities, entity, selectEntity}: EntitiesListProps
     return (
         <div id={'entity-list'} class={'section entities-list-section'}>
             <h3>Entities</h3>
-            {showDataTable && <EntitiesDataTable entities={entities} onClose={() => {setShowDataTable(false);}} />}
             <div class={'entities-actions button-size-s'}>
-                <button onClick={() => {setShowDataTable(true);}}>Data table</button>
+                {showDataTable && 
+                    <EntitiesDataTable entities={entities} onClose={() => {setShowDataTable(false);}} /> }
+                    
+                {entities.length > 0 && 
+                    <button onClick={() => {setShowDataTable(true);}}>Data table</button> }
             </div>
             <div class={'scroll-container'}>
                 {$entities}
