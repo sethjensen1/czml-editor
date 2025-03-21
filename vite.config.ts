@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import preact from '@preact/preset-vite'
+import { visualizer } from "rollup-plugin-visualizer";
 
 
 const cesiumSource = "node_modules/cesium/Build/Cesium";
@@ -10,11 +11,16 @@ export default defineConfig({
   base: '/czml-editor/',
   build: {
     rollupOptions: {
-      external: ['cesium']
+      output: {
+        manualChunks: {
+          cesium: ['cesium']
+        },
+      },
     }
   },
   plugins: [
     preact(),
+    visualizer(),
     viteStaticCopy({
       targets: [
         { src: `${cesiumSource}/ThirdParty`, dest: cesiumBaseUrl },
