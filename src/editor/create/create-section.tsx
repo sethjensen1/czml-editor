@@ -1,7 +1,7 @@
 import { Section } from "../../misc/elements/section";
 
 import { Entity } from "cesium";
-import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useContext, useEffect, useState } from "preact/hooks";
 import { CreateMultyPointFeature } from "./create-multy-point";
 import { CreateBillboard } from "./create-billboard";
 import { EditorContext } from "../editor";
