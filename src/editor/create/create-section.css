@@ -1,0 +1,17 @@
+.creation-actions {
+    min-height: 4em;
+}
+
+.creation-actions:not(.active) {
+    display: flex;
+    flex-direction: row;
+}
+
+.creation-actions:not(.active) button {
+    font-size: 0.75em;
+
+    padding: 0.1em;
+
+    width: 5em;
+    height: 5em;
+}

@@ -27,7 +27,7 @@ export function CreateModel({active, disabled, setActiveType}: CreateModelProps)
     }, [setActiveType]);
 
     return (
-        <div className={'create-model'}>
+        <>
             { !active && <FileInput disabled={disabled} 
                                     name={'Add model'} 
                                     onFile={handleUpload} 
@@ -35,6 +35,6 @@ export function CreateModel({active, disabled, setActiveType}: CreateModelProps)
 
             { active && <div>Click in a map view to set model position</div>}
             { active && <button onClick={handleCancel}>Cancel</button>}
-        </div>
+        </>
     );
 }
