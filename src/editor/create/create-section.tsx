@@ -25,8 +25,6 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
     const clickCreateController = useContext(EditorContext).clickCreateController;
     const viewer = useContext(ViewerContext);
 
-    const handleEntityCreatedByClickRef = useRef((_e: Entity) => {});
-
     const handleActiveTypeSet = useCallback((aType: CreateSectionMode) => {
         setActiveType(aType);
         if (!clickCreateController) {
@@ -41,12 +39,12 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
                 clickCreateController.subscribeToEvents();
             }
             else {
-                clickCreateController.subscribeToEvents();
+                clickCreateController.unSubscribeToEvents();
             }
         }
     }, [clickCreateController, setActiveType]);
 
-    handleEntityCreatedByClickRef.current = useCallback((entity: Entity) => {
+    const handleOnClickCreate = useCallback((entity: Entity) => {
         setActiveType(undefined);
 
         if (clickCreateController) {
@@ -63,14 +61,13 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
 
     useEffect(() => {
         if (clickCreateController) {
-            const handler = handleEntityCreatedByClickRef.current;
-            clickCreateController.newEntityEvent.addEventListener(handler);
+            clickCreateController.newEntityEvent.addEventListener(handleOnClickCreate);
 
             return () => {
-                clickCreateController.newEntityEvent.removeEventListener(handler);
+                clickCreateController.newEntityEvent.removeEventListener(handleOnClickCreate);
             };
         }
-    }, [clickCreateController, handleEntityCreatedByClickRef]);
+    }, [clickCreateController, handleOnClickCreate]);
 
     const billboardActive = activeType === CreateEntityInputMode.billboard;
     const polygonActive = activeType === 'polygon';
@@ -96,7 +93,7 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
                 {!polygonDisabled && <CreateMultyPointFeature type={'polygon'} active={polygonActive} 
                     disabled={polygonDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />}
                 
-                {!modelDisabled && <CreateModel active={activeType === CreateEntityInputMode.model}
+                {!modelDisabled && <CreateModel active={modelActive}
                     disabled={!allEnabled} setActiveType={handleActiveTypeSet} /> }
             </div>
         </Section>
