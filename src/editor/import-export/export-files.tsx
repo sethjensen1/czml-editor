@@ -7,8 +7,9 @@ import "./export-files.css"
 
 type ExportFilesProps = {
     entities: Entity[];
+    onExport?: () => void;
 };
-export function ExportFiles({entities}: ExportFilesProps) {
+export function ExportFiles({entities, onExport}: ExportFilesProps) {
 
     const handleDownloadKML = useCallback(() => {
         const ds = new CustomDataSource("export");
@@ -19,7 +20,7 @@ export function ExportFiles({entities}: ExportFilesProps) {
 
             downloadAsFile(kml, 'document.kml');
         });
-    }, [entities]);
+    }, [entities, onExport]);
 
     const handleDownloadCZML = useCallback(() => {
         const writer = new CzmlWriter({ separateResources: false });
@@ -28,7 +29,7 @@ export function ExportFiles({entities}: ExportFilesProps) {
         const czml = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(writer.toJSON()));
         downloadAsFile(czml, 'document.czml');
         
-    }, [entities]);
+    }, [entities, onExport]);
 
     return (
         <div class={'export'}>
