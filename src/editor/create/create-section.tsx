@@ -9,6 +9,8 @@ import { CreateEntityInputMode } from "../../geometry-editor/input-new-entity";
 import { ViewerContext } from "../../app";
 import { CreateModel } from "./create-model";
 
+import "./create-section.css"
+import cls from "../../misc/cls";
 
 type GeometryEditorMode = 'polygon' | 'polyline'
 type CreateSectionMode = CreateEntityInputMode | undefined | GeometryEditorMode;
@@ -73,22 +75,30 @@ export function CreateEntitySection({onEntityCreated}: CreateEntitySectionProps)
     const billboardActive = activeType === CreateEntityInputMode.billboard;
     const polygonActive = activeType === 'polygon';
     const polylineActive = activeType === 'polyline';
+    const modelActive = activeType === CreateEntityInputMode.model;
 
     const allEnabled = activeType === undefined;
+
     const billboardDisabled = !allEnabled && !billboardActive;
-    const polygonDisabled = !allEnabled  && !polygonActive;
     const polylineDisabled = !allEnabled  && !polylineActive;
+    const polygonDisabled = !allEnabled  && !polygonActive;
+    const modelDisabled = !allEnabled  && !modelActive
 
     return (
         <Section id={'create-entity'} className={'create-section'} header={'Create entities'}>
-            <CreateBillboard active={billboardActive}
-                disabled={billboardDisabled} setActiveType={handleActiveTypeSet} />
-            <CreateMultyPointFeature type={'polyline'} active={polylineActive} 
-                disabled={polylineDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
-            <CreateMultyPointFeature type={'polygon'} active={polygonActive} 
-                disabled={polygonDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />
-            <CreateModel active={activeType === CreateEntityInputMode.model}
-                disabled={!allEnabled} setActiveType={handleActiveTypeSet} />
+            <div class={cls('creation-actions', activeType !== undefined && 'active',  activeType !== undefined && `${activeType}`)}>
+                {!billboardDisabled && <CreateBillboard active={billboardActive}
+                    disabled={billboardDisabled} setActiveType={handleActiveTypeSet} />}
+
+                {!polylineDisabled && <CreateMultyPointFeature type={'polyline'} active={polylineActive} 
+                    disabled={polylineDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />}
+                
+                {!polygonDisabled && <CreateMultyPointFeature type={'polygon'} active={polygonActive} 
+                    disabled={polygonDisabled} setActiveType={handleActiveTypeSet} {...{onEntityCreated}} />}
+                
+                {!modelDisabled && <CreateModel active={activeType === CreateEntityInputMode.model}
+                    disabled={!allEnabled} setActiveType={handleActiveTypeSet} /> }
+            </div>
         </Section>
     );
 }

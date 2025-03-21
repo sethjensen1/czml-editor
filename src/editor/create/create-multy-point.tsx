@@ -45,7 +45,7 @@ export function CreateMultyPointFeature({type, active, onEntityCreated, disabled
     }, [setCreationMode, setActiveType, viewer, geometryEditor]);
 
     return (
-        <div class={`create-${type}`}>
+        <>
             { active && <div>
                 Click in a 3d map view to add points to {type} geometry.
                 {type === 'polygon' && <div> You need at least 3 points for polygon.</div>}
@@ -56,6 +56,6 @@ export function CreateMultyPointFeature({type, active, onEntityCreated, disabled
             </button> }
             { creationMode && <button onClick={handleSave}>Save</button>}
             { creationMode && <button onClick={handleCancel}>Cancel</button>}
-        </div>
+        </>
     );
 }

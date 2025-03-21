@@ -20,11 +20,11 @@ export function CreateBillboard({active, disabled, setActiveType}: CreateBillboa
     }, [setActiveType]);
 
     return (
-        <div className={'create-billboard'}>
+        <>
             { active && <div>Click in a map view to create billboard</div>}
             { !active && <button disabled={disabled} 
                 onClick={handleCreate}>Add Billboard</button> }
             { active && <button onClick={handleCancel}>Cancel</button>}
-        </div>
+        </>
     );
 }
