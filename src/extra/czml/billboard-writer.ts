@@ -1,7 +1,7 @@
 import { BillboardGraphics, HeightReference, HorizontalOrigin, VerticalOrigin } from "cesium"
 import { WriterContext } from "../export-czml";
 import { writeBoundingRectangle, writeCartesian, writeColor, writeDistanceDisplayCondition, writeEnum, writeNearFarScalar, writeScalar } from "./field-writers";
-import { writeImage } from "./field-resource-writer";
+import { writeImage } from "./field-image-writer";
 
 export async function writeBillboard(billboard: BillboardGraphics, ctx: WriterContext) {
 

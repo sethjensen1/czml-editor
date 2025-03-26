@@ -1,4 +1,4 @@
-import { BoundingRectangle, Cartesian2, Cartesian3, Cartesian4, Cartographic, Color, ConstantPositionProperty, ConstantProperty, DistanceDisplayCondition, JulianDate, NearFarScalar, PositionProperty, Property, Quaternion, ReferenceFrame, ReferenceProperty, SampledPositionProperty, SampledProperty, TimeInterval, TimeIntervalCollection, VelocityOrientationProperty } from "cesium";
+import { BoundingRectangle, Cartesian2, Cartesian3, Cartesian4, Cartographic, Color, ConstantPositionProperty, ConstantProperty, DistanceDisplayCondition, JulianDate, NearFarScalar, PositionProperty, Property, PropertyBag, Quaternion, ReferenceFrame, ReferenceProperty, SampledPositionProperty, SampledProperty, TimeInterval, TimeIntervalCollection, VelocityOrientationProperty } from "cesium";
 import { WriterContext } from "../export-czml";
 
 
@@ -207,7 +207,7 @@ export function writeOrientation(val: Property, ctx: WriterContext) {
             }
         }
 
-        ctx.options?.onFailedToEncode?.(ctx.entity!, ['orientation'], val);
+        ctx.options?.onFailedToEncode?.(ctx.entity!, ctx.path, val);
     }
     
     if (val.isConstant) {
@@ -218,7 +218,15 @@ export function writeOrientation(val: Property, ctx: WriterContext) {
         }
     }
     else {
-        ctx.options?.onFailedToEncode?.(ctx.entity!, ['orientation'], val);
+        ctx.options?.onFailedToEncode?.(ctx.entity!, ctx.path, val);
     }
     
+}
+
+export function writePropertyBag(bag: PropertyBag, ctx: WriterContext) {
+    if (bag.isConstant) {
+        return bag.getValue();
+    }
+
+    ctx.options?.onFailedToEncode?.(ctx.entity!, ctx.path, bag);
 }

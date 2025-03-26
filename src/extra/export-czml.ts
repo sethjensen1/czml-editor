@@ -1,7 +1,8 @@
-import { DataSource, DataSourceClock, Entity, ReferenceProperty } from "cesium";
-import { writeOrientation, writePosition, writeReferenceProperty, writeTimeIntervalCollectionValue } from "./czml/field-writers";
+import { DataSource, DataSourceClock, Entity } from "cesium";
+import { writeOrientation, writePosition, writePropertyBag, writeTimeIntervalCollectionValue } from "./czml/field-writers";
 import { writeBillboard } from "./czml/billboard-writer";
-import { buildImagesMap, exportImages as exportImagesF, getResourceByPath, ImageExport, ResourcesMap } from "./czml/field-resource-writer";
+import { buildImagesMap, exportImages as exportImagesF, getResourceByPath, ImageExport, ResourcesMap } from "./czml/field-image-writer";
+import { writeLabel } from "./czml/label-writer";
 
 export type ResourceCahe = {
     [resource: string]: ResourceCacheLine
@@ -20,11 +21,10 @@ export type WriterContext = {
       srcPath: string[],
       dest: string
     }
-
+    
     clock?: DataSourceClock;
     
     entity?: Entity;
-    entities?: Entity[];
     
     exportedImages?: ImageExport;
 }
@@ -58,9 +58,8 @@ export async function exportAsCzml(entities: Entity[], options: ExportOptions) {
         const url = getResourceByPath(entity, ['billboard', 'image'])?.url;
         const sameUrlEntities = url && ctx.resourcesMap[url];
 
-        ctx.forceReference = undefined;
-
         // Avoid making changes to actual entities
+        ctx.forceReference = undefined;
         if (sameUrlEntities && sameUrlEntities[0].id !== entity.id) {
             ctx.forceReference = {
                 srcPath: ['billboard', 'image'],
@@ -68,7 +67,7 @@ export async function exportAsCzml(entities: Entity[], options: ExportOptions) {
             }
         }
 
-        packets.push(await entityToPacket(entity, {...ctx, path: [], entity, entities, clock,}));
+        packets.push(await entityToPacket(entity, {...ctx, path: [], entity, clock,}));
     }
 
     return packets;
@@ -99,23 +98,36 @@ export async function entityToPacket(entity: Entity, ctx: WriterContext) {
     if (entity.orientation) {
         packet = {
             ...packet,
-            position: writeOrientation(entity.orientation, {...ctx, path: ['orientation']})
+            orientation: writeOrientation(entity.orientation, {...ctx, path: ['orientation']})
+        }
+    }
+
+    if (entity.properties) {
+        if (entity.properties) {
+            packet = {
+                ...packet,
+                position: writePropertyBag(entity.properties, {...ctx, path: ['properties']})
+            }
         }
     }
 
 
-    /** Graphics Writers */
+    /* Graphic Features Writers */
 
     if (entity.billboard) {
         packet.billboard = await writeBillboard(entity.billboard,  {...ctx, path: ['billboard']});
     }
 
-    // if (entity.polyline) {
-    //     packet.polyline = writePolyline(entity.polyline, ctx);
-    // }
+    if (entity.label) {
+        packet.label = writeLabel(entity.label,  {...ctx, path: ['label']});
+    }
 
     // if (entity.polygon) {
     //     packet.polygon = writePolygon(entity.polygon, ctx);
+    // }
+
+    // if (entity.polyline) {
+    //     packet.polyline = writePolyline(entity.polyline, ctx);
     // }
 
     // if (entity.rectangle) {
@@ -130,9 +142,6 @@ export async function entityToPacket(entity: Entity, ctx: WriterContext) {
     //     packet.tileset = writeTileset(entity.tileset, ctx);
     // }
 
-    // if (entity.label) {
-    //     packet.label = writeLabel(entity.label, ctx);
-    // }
 
     return packet;
 }
