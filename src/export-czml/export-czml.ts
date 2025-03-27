@@ -1,8 +1,11 @@
 import { DataSource, DataSourceClock, Entity } from "cesium";
-import { writeOrientation, writePosition, writePropertyBag, writeTimeIntervalCollectionValue } from "./czml/field-writers";
-import { writeBillboard } from "./czml/billboard-writer";
-import { buildImagesMap, exportImages as exportImagesF, getResourceByPath, ImageExport, ResourcesMap } from "./czml/field-image-writer";
-import { writeLabel } from "./czml/label-writer";
+import { writeOrientation, writePosition, writePropertyBag, writeTimeIntervalCollectionValue } from "./writers/field-writers";
+import { writeBillboard } from "./writers/billboard-writer";
+import { buildImagesMap, exportImages as exportImagesF, getResourceByPath, ImageExport, ResourcesMap } from "./writers/field-image-writer";
+import { writeLabel } from "./writers/label-writer";
+import { writePolygon } from "./writers/polygon-writer";
+import { writeRectangle } from "./writers/rectangle-writer";
+import { writePolyline } from "./writers/polyline-writer";
 
 export type ResourceCahe = {
     [resource: string]: ResourceCacheLine
@@ -122,17 +125,17 @@ export async function entityToPacket(entity: Entity, ctx: WriterContext) {
         packet.label = writeLabel(entity.label,  {...ctx, path: ['label']});
     }
 
-    // if (entity.polygon) {
-    //     packet.polygon = writePolygon(entity.polygon, ctx);
-    // }
+    if (entity.polygon) {
+        packet.polygon = await writePolygon(entity.polygon, {...ctx, path: ['polygon']});
+    }
 
-    // if (entity.polyline) {
-    //     packet.polyline = writePolyline(entity.polyline, ctx);
-    // }
+    if (entity.rectangle) {
+        packet.rectangle = await writeRectangle(entity.rectangle, {...ctx, path: ['rectangle']});
+    }
 
-    // if (entity.rectangle) {
-    //     packet.rectangle = writeRectangle(entity.rectangle, ctx);
-    // }
+    if (entity.polyline) {
+        packet.polyline = writePolyline(entity.polyline, {...ctx, path: ['polyline']});
+    }
 
     // if (entity.model) {
     //     packet.model = writeModel(entity.model, ctx);

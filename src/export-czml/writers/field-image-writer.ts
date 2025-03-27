@@ -8,7 +8,7 @@ import { writeScalar } from "./field-writers";
 export async function writeImage(property: Property, ctx: WriterContext) {
 
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (!val || val.reference) return val;
 
     // We don't want to copy base64 data urls, we want to replace such urls
     // as references 
@@ -69,12 +69,17 @@ export async function exportImages(imgs: ResourcesMap, options: ExportOptions) {
     
         const name = urlFileName || `icon-${counter++}.${ext}`;
     
-        const img = await resource.fetchImage() as ImageBitmap;
-        const targetPath = exportImagesPath + name;
-
-        result = {
-            ...result,
-            [url]: {targetPath, img}
+        try {
+            const img = await resource.fetchImage() as ImageBitmap;
+            const targetPath = exportImagesPath + name;
+    
+            result = {
+                ...result,
+                [url]: {targetPath, img}
+            }
+        }
+        catch {
+            // TODO: Error reporting
         }
     }
 

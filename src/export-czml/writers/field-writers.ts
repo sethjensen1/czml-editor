@@ -1,4 +1,27 @@
-import { BoundingRectangle, Cartesian2, Cartesian3, Cartesian4, Cartographic, Color, ConstantPositionProperty, ConstantProperty, DistanceDisplayCondition, JulianDate, NearFarScalar, PositionProperty, Property, PropertyBag, Quaternion, ReferenceFrame, ReferenceProperty, SampledPositionProperty, SampledProperty, TimeInterval, TimeIntervalCollection, VelocityOrientationProperty } from "cesium";
+import { 
+    BoundingRectangle, 
+    Cartesian2, 
+    Cartesian3, 
+    Cartesian4, 
+    Cartographic, 
+    Color, 
+    ConstantPositionProperty, 
+    ConstantProperty, 
+    DistanceDisplayCondition, 
+    JulianDate, 
+    NearFarScalar, 
+    PositionProperty, 
+    Property, 
+    PropertyBag, 
+    Quaternion, 
+    ReferenceFrame, 
+    ReferenceProperty, 
+    SampledPositionProperty, 
+    SampledProperty, 
+    TimeInterval, 
+    TimeIntervalCollection, 
+    VelocityOrientationProperty 
+} from "cesium";
 import { WriterContext } from "../export-czml";
 
 
@@ -16,7 +39,7 @@ function arrayFromLengthAndGet<T>(val: GetAndLength) {
     return Array.from(forOfLength<T | undefined>(val)).filter(v => !!v) as T[];
 }
 
-export function writeReferenceProperty(prop: ReferenceProperty, _ctx: WriterContext) {
+export function writeReferenceValue(prop: ReferenceProperty, _ctx: WriterContext) {
     return `${prop.targetId}#${prop.targetPropertyNames.join('.')}`;
 }
 
@@ -28,13 +51,13 @@ export function writeScalar(property: Property, ctx: WriterContext) {
 
     if (forcedRefMatch) {
         return {
-            "$ref": forcedRef.dest
+            "reference": forcedRef.dest
         }
     }
 
     if (property instanceof ReferenceProperty) {
         return {
-            "$ref": writeReferenceProperty(property, ctx)
+            "reference": writeReferenceValue(property, ctx)
         }
     }
 
@@ -47,21 +70,21 @@ export function writeScalar(property: Property, ctx: WriterContext) {
 
 export function writeEnum(property: Property, ctx: WriterContext, enumObj: any) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     return writeEnumValue(val, enumObj);
 }
 
 export function writeCartesian(property: Property, ctx: WriterContext) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     return writeCartesianVal(val);
 }
 
 export function writeColor(property: Property, ctx: WriterContext) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     const c = val as Color;
     return {
@@ -71,7 +94,7 @@ export function writeColor(property: Property, ctx: WriterContext) {
 
 export function writeDistanceDisplayCondition(property: Property, ctx: WriterContext) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     const d = val as DistanceDisplayCondition;
     return [d.near, d.far];
@@ -79,14 +102,25 @@ export function writeDistanceDisplayCondition(property: Property, ctx: WriterCon
 
 export function writeBoundingRectangle(property: Property, ctx: WriterContext) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     return writeBoundingRectangleValue(val as BoundingRectangle);
 }
 
+export function writePositionList(property: Property, ctx: WriterContext, encoding?: PositionEncoding) {
+    const val = writeScalar(property, ctx);
+    if (val === undefined || val === null || val.reference) return val;
+        
+    if (Array.isArray(val)) {
+        return writePositionListValue(val as Cartesian3[], encoding)
+    }
+
+    // TODO: error handling
+}
+
 export function writeNearFarScalar(property: Property, ctx: WriterContext) {
     const val = writeScalar(property, ctx);
-    if (!val || val.$ref) return val;
+    if (val === undefined || val === null || val.reference) return val;
 
     const nfsc = val as NearFarScalar;
     return {
@@ -143,6 +177,41 @@ export function writePosition(val: PositionProperty, _ctx: WriterContext, encodi
     if (val instanceof SampledPositionProperty) {
         return writeSampledPositionProperty(val as SampledPositionProperty, _ctx, encoding);
     }
+}
+
+export function writePositionListValue(coords: Cartesian3[], encoding?: PositionEncoding) {
+    switch (encoding) {
+
+        case "cartographicDegrees": 
+        return {
+                "cartographicDegrees": coords.map(crt3toCtgArr).flat(1)
+            }
+        case "cartesian":
+            return {
+                "cartesian": coords.map(val => [val.x, val.y, val.z]).flat(1)
+            }
+
+    }
+}
+    
+export function writePositionListOfListValue(coords: Cartesian3[][], encoding?: PositionEncoding) {
+    switch (encoding) {
+
+        case "cartographicDegrees": 
+        return {
+                "cartographicDegrees": coords.map(ring => ring.map(crt3toCtgArr).flat(1))
+            }
+        case "cartesian":
+            return {
+                "cartesian": coords.map(ring => ring.map(val => [val.x, val.y, val.z]).flat(1))
+            }
+            
+    }
+}
+
+function crt3toCtgArr(c3: Cartesian3) {
+    const vc = Cartographic.fromCartesian(c3);
+    return [vc.longitude, vc.latitude, vc.height]
 }
 
 export function writeSampledPositionProperty(val: SampledPositionProperty, _ctx: WriterContext, encoding?: PositionEncoding) {
@@ -202,7 +271,7 @@ export function writeOrientation(val: Property, ctx: WriterContext) {
         if (positionRefProp) {
             return {
                 "velocityReference": {
-                    "$ref": writeReferenceProperty(positionRefProp, ctx)
+                    "$ref": writeReferenceValue(positionRefProp, ctx)
                 }
             }
         }
