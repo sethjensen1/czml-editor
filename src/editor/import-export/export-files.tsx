@@ -2,7 +2,7 @@ import { CustomDataSource, Entity, exportKml, exportKmlResultKml } from "cesium"
 import { useCallback } from "preact/hooks";
 
 import "./export-files.css"
-import { exportAsCzml } from "../../export-czml/export-czml";
+import { exportAsCzml } from "../../czml-ext/export-czml";
 
 import { ZipWriter, BlobWriter, TextReader } from "@zip.js/zip.js"
 
@@ -42,7 +42,7 @@ export function ExportFiles({entities, onExport}: ExportFilesProps) {
                 }
             }
     
-            // downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
+            downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
         }
         catch(e) {
             console.log(czml);

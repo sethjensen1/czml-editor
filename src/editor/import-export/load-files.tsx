@@ -3,6 +3,7 @@ import { CesiumDataSource } from "./files-section";
 import { FileInput } from "../../misc/elements/file-input";
 import { useCallback, useContext } from "preact/hooks";
 import { ViewerContext } from "../../app";
+import { CzmlDataSourceExtension } from "../../czml-ext/czml-ds-ext";
 
 type LoadFilesProps = {
     onLoad: (entities: Entity[], dataSource: CesiumDataSource, file: File) => any;
@@ -26,6 +27,9 @@ export function LoadFiles({onLoad}: LoadFilesProps) {
         if (/vnd.google-earth/.test(file.type) || /\.kmz|\.kml/.test(file.name)) {
             handleCesiumDS(KmlDataSource.load(file), file);
         }
+        else if (/\.(czmz|zip)/.test(file.name)) {
+            handleCesiumDS(CzmlDataSourceExtension.load(file), file);
+        }
         else if (/\.czml/.test(file.name)) {
             readTextFromFile(file).then(text => {
                 const czmljson = JSON.parse(text);
@@ -46,7 +50,7 @@ export function LoadFiles({onLoad}: LoadFilesProps) {
 
     return (
         <FileInput name="Load Document" 
-                accept={".kml, .kmz, .json, .czml, .czmz, .geojson"} 
+                accept={".kml, .kmz, .json, .czml, .czmz, .czml.zip, .geojson"} 
                 onFile={fileSelected} />
     );
 

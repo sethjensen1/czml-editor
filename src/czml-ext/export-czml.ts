@@ -2,7 +2,7 @@ import { DataSource, DataSourceClock, Entity } from "cesium";
 import { exportModels as exportModelsF, ModelExport } from "./writers/field-gltf-writer";
 import { buildImagesMap, exportImages as exportImagesF, getResourceByPath, ImageExport, ResourcesMap } from "./writers/field-image-writer";
 import { writeOrientation, writePosition, writePropertyBag, writeScalar, writeTimeIntervalCollectionValue } from "./writers/field-writers";
-import { writeLabel } from "./writers/graphics//label-writer";
+import { writeLabel } from "./writers/graphics/label-writer";
 import { writeBillboard } from "./writers/graphics/billboard-writer";
 import { writeModel } from "./writers/graphics/model-writer";
 import { writePolygon } from "./writers/graphics/polygon-writer";
