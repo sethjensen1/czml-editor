@@ -1,5 +1,5 @@
 import * as json2ts from "json-schema-to-typescript";
-import { readdirSync, readFile, readFileSync, writeFileSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync } from 'fs';
 import path from "path";
 
 
@@ -25,8 +25,8 @@ function getFilesSync(dir, accept) {
 }
 
 async function generateValueTypes() {
-    const srcSchemaPath = 'src/extra/czml-writer/Schema/Values';
-    const destFilePath = 'src/export-czml/generated/values';
+    const srcSchemaPath = '3dparty/czml-writer/Schema/Values';
+    const destFilePath = 'src/czml-ext/generated/values';
 
     const files = getFilesSync(srcSchemaPath);
 
