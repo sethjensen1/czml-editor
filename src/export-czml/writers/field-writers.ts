@@ -44,15 +44,13 @@ export function writeReferenceValue(prop: ReferenceProperty, _ctx: WriterContext
 }
 
 export function writeScalar(property: Property, ctx: WriterContext) {
-    const forcedRef = ctx.forceReference;
+    const overwrite = ctx.overwrite;
 
-    const forcedRefMatch = forcedRef && 
-        forcedRef.srcPath.join('.') === ctx.path.join('.');
+    const overwriteMatch = overwrite && 
+        overwrite.srcPath.join('.') === ctx.path.join('.');
 
-    if (forcedRefMatch) {
-        return {
-            "reference": forcedRef.dest
-        }
+    if (overwriteMatch) {
+        return overwrite.dest;
     }
 
     if (property instanceof ReferenceProperty) {
@@ -180,7 +178,7 @@ export function writePosition(val: PositionProperty, _ctx: WriterContext, encodi
 }
 
 export function writePositionListValue(coords: Cartesian3[], encoding?: PositionEncoding) {
-    switch (encoding) {
+    switch (encoding || "cartographicDegrees") {
 
         case "cartographicDegrees": 
         return {
@@ -195,8 +193,7 @@ export function writePositionListValue(coords: Cartesian3[], encoding?: Position
 }
     
 export function writePositionListOfListValue(coords: Cartesian3[][], encoding?: PositionEncoding) {
-    switch (encoding) {
-
+    switch (encoding || "cartographicDegrees") {
         case "cartographicDegrees": 
         return {
                 "cartographicDegrees": coords.map(ring => ring.map(crt3toCtgArr).flat(1))
@@ -293,9 +290,11 @@ export function writeOrientation(val: Property, ctx: WriterContext) {
 }
 
 export function writePropertyBag(bag: PropertyBag, ctx: WriterContext) {
-    if (bag.isConstant) {
-        return bag.getValue();
+    const czml = {};
+
+    for(const prop of bag.propertyNames) {
+        (czml as any)[prop] = writeScalar(bag[prop], {...ctx, path: [...ctx.path, prop]});
     }
 
-    ctx.options?.onFailedToEncode?.(ctx.entity!, ctx.path, bag);
+    return czml;
 }

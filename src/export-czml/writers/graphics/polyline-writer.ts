@@ -1,10 +1,10 @@
 import { ArcType, ClassificationType, PolylineGraphics, ShadowMode } from "cesium";
-import { WriterContext } from "../export-czml";
-import { Polyline as PolylineCzml } from "../schema/polyline";
-import { writeDistanceDisplayCondition, writeEnum, writePositionList, writeScalar } from "./field-writers";
-import { writePolylineMaterial } from "./material-writer";
+import { WriterContext } from "../../export-czml";
+import { Polyline as PolylineCzml } from "../../schema/polyline";
+import { writeDistanceDisplayCondition, writeEnum, writePositionList, writeScalar } from "../field-writers";
+import { writePolylineMaterial } from "../material-writer";
 
-export async function writePolyline(polyline: PolylineGraphics, ctx: WriterContext) {
+export function writePolyline(polyline: PolylineGraphics, ctx: WriterContext) {
     const packet: PolylineCzml = {};
     
     /**
@@ -42,8 +42,10 @@ export async function writePolyline(polyline: PolylineGraphics, ctx: WriterConte
     if (polyline.material !== undefined) {
         packet.material =  writePolylineMaterial(polyline.material, {...ctx, path: [...ctx.path, 'material']});
     }
-    // * @property [material = Color.WHITE] - A Property specifying the material used to draw the polyline.
-    // * @property [depthFailMaterial] - A property specifying the material used to draw the polyline when it is below the terrain.
+    
+    if (polyline.depthFailMaterial !== undefined) {
+        packet.depthFailMaterial =  writePolylineMaterial(polyline.depthFailMaterial, {...ctx, path: [...ctx.path, 'depthFailMaterial']});
+    }
 
     if (polyline.arcType !== undefined) {
         packet.arcType =  writeEnum(polyline.arcType, {...ctx, path: [...ctx.path, 'arcType']}, ArcType);

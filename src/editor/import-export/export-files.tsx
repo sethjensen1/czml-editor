@@ -1,8 +1,10 @@
 import { CustomDataSource, Entity, exportKml, exportKmlResultKml } from "cesium";
 import { useCallback } from "preact/hooks";
-import CzmlWriter from "../../extra/czml-writer";
 
 import "./export-files.css"
+import { exportAsCzml } from "../../export-czml/export-czml";
+
+import { ZipWriter, BlobWriter, TextReader } from "@zip.js/zip.js"
 
 
 type ExportFilesProps = {
@@ -22,13 +24,33 @@ export function ExportFiles({entities, onExport}: ExportFilesProps) {
         });
     }, [entities, onExport]);
 
-    const handleDownloadCZML = useCallback(() => {
-        const writer = new CzmlWriter({ separateResources: false });
-        entities.forEach(entity => writer.addEntity(entity));
-
-        const czml = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(writer.toJSON()));
-        downloadAsFile(czml, 'document.czml');
+    const handleDownloadCZML = useCallback(async () => {
+        const { czml, exportedImages } = await exportAsCzml(entities, { exportImages: true });
         
+        try {
+            const czmlText = JSON.stringify(czml);
+    
+            const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
+            await zipWriter.add('document.czml', new TextReader(czmlText));
+    
+            if (exportedImages) {
+                for (const { targetPath, img } of Object.values(exportedImages)) {
+                    const canvas = new OffscreenCanvas(img.width, img.height);
+                    canvas.getContext('2d')?.drawImage(img, 0, 0);
+                    const blob = await canvas.convertToBlob();
+                    await zipWriter.add(targetPath, blob.stream())
+                }
+            }
+    
+            // downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
+        }
+        catch(e) {
+            console.log(czml);
+            console.error(e);
+        }
+        
+        // const czmlData = 'data:text/json;charset=utf-8,' + encodeURIComponent();
+        // downloadAsFile(czmlData, 'document.czml');
     }, [entities, onExport]);
 
     return (
@@ -44,6 +66,14 @@ export function ExportFiles({entities, onExport}: ExportFilesProps) {
 function downloadAsFile(content: string, filename: string) {
     const link = document.createElement('A') as HTMLAnchorElement;
     link.href = content;
+    link.download = filename;
+    link.click();
+    link.remove();
+}
+
+function downloadBlobFile(content: Blob, filename: string) {
+    const link = document.createElement('A') as HTMLAnchorElement;
+    link.href = URL.createObjectURL(content);
     link.download = filename;
     link.click();
     link.remove();

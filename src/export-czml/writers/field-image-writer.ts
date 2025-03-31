@@ -1,4 +1,4 @@
-import { Entity, Property, Resource } from "cesium";
+import { ConstantProperty, Entity, Property, Resource } from "cesium";
 import { ExportOptions, WriterContext } from "../export-czml";
 import { writeScalar } from "./field-writers";
 
@@ -49,7 +49,7 @@ export function buildImagesMap(entities: Entity[], path: string[], map: Resource
 export type ImageExport = {
     [url: string]: {
         targetPath: string
-        img: ImageBitmap
+        img: ImageBitmap | HTMLImageElement
     }
 };
 export async function exportImages(imgs: ResourcesMap, options: ExportOptions) {
@@ -62,24 +62,36 @@ export async function exportImages(imgs: ResourcesMap, options: ExportOptions) {
     for (const [url] of Object.entries(imgs)) {
 
         const resource = new Resource(url);
-        const ext = resource.extension;
+        const urlFileExt = resource.extension;
     
         const urlPathname = (resource.isBlobUri || resource.isDataUri) ? undefined : new URL(resource.url).pathname;
         const urlFileName = urlPathname?.match(/\/([\w\d\.\-]+)$/i)?.[1];
     
+        const dataMime = resource.isDataUri ? url.substring(url.indexOf(":") + 1, url.indexOf(";")) : undefined;
+        const mimeExt = dataMime?.replace('image/', '');
+
+        const ext = urlFileExt || mimeExt;
+
         const name = urlFileName || `icon-${counter++}.${ext}`;
     
         try {
-            const img = await resource.fetchImage() as ImageBitmap;
+            const img = await resource.fetchImage();
             const targetPath = exportImagesPath + name;
-    
-            result = {
-                ...result,
-                [url]: {targetPath, img}
+            
+            if (img) {
+                result = {
+                    ...result,
+                    [url]: {targetPath, img}
+                }
+            }
+            else {
+                // TODO: Error reporting
+                console.warn('failed to fetch image');
             }
         }
         catch {
             // TODO: Error reporting
+            console.warn('failed to fetch image');
         }
     }
 
@@ -87,15 +99,15 @@ export async function exportImages(imgs: ResourcesMap, options: ExportOptions) {
 }
 
 export function getResourceByPath(entity: Entity, path: string[]) {
-    const property = getPropertyByPath(entity, path) as (Property | Resource | string | undefined);
+    const property = getPropertyByPath(entity, path) as (Property | ConstantProperty | Resource | string | undefined);
 
     if (property) {
         if (typeof property === 'string') {
             return new Resource(property);
         }
 
-        if (property instanceof Property && property?.isConstant) {
-            const val = property.getValue();
+        if ((property as any).isConstant && (property as any).getValue) {
+            const val = (property as ConstantProperty).getValue();
             if (val) {
                 if (val instanceof Resource) {
                     return val;
@@ -114,7 +126,7 @@ function getPropertyByPath(entity: Entity, path: string[]) {
     for (const p of path) {
         if (ret === undefined) return undefined;
 
-        ret = (entity as any)[p];
+        ret = (ret as any)[p];
     }
 
     return ret;

@@ -1,7 +1,7 @@
 import { ClassificationType, HeightReference, Property, Rectangle, RectangleGraphics, ShadowMode } from "cesium";
-import { WriterContext } from "../export-czml";
-import { writeColor, writeDistanceDisplayCondition, writeEnum, writeScalar } from "./field-writers";
-import { writeMaterial } from "./material-writer";
+import { WriterContext } from "../../export-czml";
+import { writeColor, writeDistanceDisplayCondition, writeEnum, writeScalar } from "../field-writers";
+import { writeMaterial } from "../material-writer";
 
 export async function writeRectangle(rectangle: RectangleGraphics, ctx: WriterContext) {
     const packet: any = {};

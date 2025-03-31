@@ -1,6 +1,6 @@
 import { HeightReference, HorizontalOrigin, LabelGraphics, LabelStyle, VerticalOrigin } from "cesium";
-import { WriterContext } from "../export-czml";
-import { writeCartesian, writeColor, writeEnum, writeNearFarScalar, writeScalar } from "./field-writers";
+import { WriterContext } from "../../export-czml";
+import { writeCartesian, writeColor, writeEnum, writeNearFarScalar, writeScalar } from "../field-writers";
 
 export function writeLabel(label: LabelGraphics, ctx: WriterContext) {
 

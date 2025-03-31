@@ -23,7 +23,7 @@ export function PropertyField({subject, property: metaProperty, onChange}: Prope
     const label = title || camelCaseToTitle(name);
 
     const property = (subject as any)[metaProperty.name] as CesiumProperty;
-    const interpolated = property !== undefined && property instanceof Property && !property.isConstant;
+    const interpolated = property !== undefined && !property.isConstant;
 
     
     const value = (property as ConstantProperty)?.valueOf();
