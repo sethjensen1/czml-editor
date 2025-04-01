@@ -1,10 +1,11 @@
 import { CustomDataSource, Entity, exportKml, exportKmlResultKml } from "cesium";
-import { useCallback } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 
 import "./export-files.css"
 import { exportAsCzml } from "../../czml-ext/export-czml";
 
 import { ZipWriter, BlobWriter, TextReader } from "@zip.js/zip.js"
+import { ModalPane } from "../../misc/elements/modal-pane";
 
 
 type ExportFilesProps = {
@@ -13,52 +14,94 @@ type ExportFilesProps = {
 };
 export function ExportFiles({entities, onExport}: ExportFilesProps) {
 
-    const handleDownloadKML = useCallback(() => {
+    const [exportDialogueOpen, setExportDialogueOpen] = useState<boolean>(false);
+
+    const handleDownloadKML = useCallback((archived?: boolean) => {
         const ds = new CustomDataSource("export");
         entities.forEach(e => ds.entities.add(e));
-        exportKml({ entities: ds.entities }).then(result => {
-            const mime = 'application/vnd.google-earth.kml+xml';
-            const kml = `data:${mime};charset=utf-8,` + encodeURIComponent((result as exportKmlResultKml).kml);
+        exportKml({ entities: ds.entities, kmz: archived }).then(async result => {
 
-            downloadAsFile(kml, 'document.kml');
+            const kmlText = (result as exportKmlResultKml).kml;
+
+            if (archived) {
+                if (archived) {
+                    const zipWriter = new ZipWriter(new BlobWriter("application/vnd.google-earth.kmz"));
+                    await zipWriter.add('document.kml', new TextReader(kmlText));
+            
+                    if ((result as exportKmlResultKml).externalFiles) {
+                        for (const [name, file] of Object.entries((result as exportKmlResultKml).externalFiles)) {
+                            await zipWriter.add(name, file.stream());
+                        }
+                    }
+            
+                    downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
+                }
+
+            }
+            else {
+                const mime = 'application/vnd.google-earth.kml+xml';
+                const kmlDataLink = `data:${mime};charset=utf-8,` + encodeURIComponent(kmlText);
+                downloadAsFile(kmlDataLink, 'document.kml');
+            }
         });
     }, [entities, onExport]);
 
-    const handleDownloadCZML = useCallback(async () => {
-        const { czml, exportedImages } = await exportAsCzml(entities, { exportImages: true });
+    const handleDownloadCZML = useCallback(async (archived?: boolean) => {
+        const options = { exportImages: archived, exportModels: archived };
+        const { czml, exportedImages } = await exportAsCzml(entities, options);
         
         try {
             const czmlText = JSON.stringify(czml);
-    
-            const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
-            await zipWriter.add('document.czml', new TextReader(czmlText));
-    
-            if (exportedImages) {
-                for (const { targetPath, img } of Object.values(exportedImages)) {
-                    const canvas = new OffscreenCanvas(img.width, img.height);
-                    canvas.getContext('2d')?.drawImage(img, 0, 0);
-                    const blob = await canvas.convertToBlob();
-                    await zipWriter.add(targetPath, blob.stream())
+            
+            if (archived) {
+                const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
+                await zipWriter.add('document.czml', new TextReader(czmlText));
+        
+                if (exportedImages) {
+                    for (const { targetPath, img } of Object.values(exportedImages)) {
+                        const canvas = new OffscreenCanvas(img.width, img.height);
+                        canvas.getContext('2d')?.drawImage(img, 0, 0);
+                        const blob = await canvas.convertToBlob();
+                        await zipWriter.add(targetPath, blob.stream())
+                    }
                 }
+        
+                downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
             }
-    
-            downloadBlobFile(await zipWriter.close(), 'document.czml.zip');
+            else {
+                const czmlData = 'data:text/json;charset=utf-8,' + encodeURIComponent(czmlText);
+                downloadAsFile(czmlData, 'document.czml');
+            }
         }
         catch(e) {
             console.log(czml);
             console.error(e);
         }
         
-        // const czmlData = 'data:text/json;charset=utf-8,' + encodeURIComponent();
-        // downloadAsFile(czmlData, 'document.czml');
     }, [entities, onExport]);
 
     return (
         <div class={'export'}>
-            <button onClick={handleDownloadKML}>Download as KML</button>
-            {/* <button>Download as KMZ</button> */}
-            <button onClick={handleDownloadCZML}>Download as CZML</button>
-            {/* <button>Download as CZMZ</button> */}
+            <button onClick={() => {setExportDialogueOpen(true)}}>Export</button>
+            <ModalPane visible={exportDialogueOpen}>
+                <div>
+                    <div><button onClick={() => {setExportDialogueOpen(false)}}>Close</button></div>
+                    
+                    <h4>Export as CZML</h4>
+                    <div>
+                        <button onClick={() => {handleDownloadCZML(true)}}>Download CZMZ</button>
+                        <button onClick={() => {handleDownloadCZML(false)}}>Download CZML</button>
+                    </div>
+                    <h4>Export as KML</h4>
+                    <div>
+                        Not all cesium features can be represented as KML
+                    </div>
+                    <div>
+                        <button onClick={() => {handleDownloadKML(true)}}>Download KMZ</button>
+                        <button onClick={() => {handleDownloadKML(false)}}>Download KML</button>
+                    </div>
+                </div>
+            </ModalPane>
         </div>
     );
 }
