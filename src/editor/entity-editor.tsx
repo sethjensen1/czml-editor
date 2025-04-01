@@ -19,6 +19,12 @@ import { modelMetaData } from './meta/model-meta';
 import { OrientationEditor } from './orientation-editor';
 import { Section } from '../misc/elements/section';
 import { Subsection } from '../misc/elements/subsection';
+import { PropertyMeta } from './meta/meta';
+
+const changes = {
+    entityId: "",
+    style: {}
+};
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -36,6 +42,29 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
             forceNameUpdate(value);
         }
     }, [entity, onChange, forceNameUpdate]);
+
+    const handleEntityChange = useCallback((val: any, feature?: string, property?: PropertyMeta) => {
+        if (entity) {
+            if (changes.entityId !== entity?.id) {
+                changes.entityId = entity.id;
+                changes.style = {};
+            }
+
+            changes.style = {
+                ...changes.style,
+                [`${feature}.${property?.name}`]: val
+            };
+        }
+    }, [entity]);
+
+    const handleStyleCopy = useCallback(() => {
+        const copy = Object.fromEntries(
+            Object.entries(changes.style)
+                .map(([key, val]) => [key, clone(val)])
+        );
+        
+        console.log(copy);
+    }, []);
 
     const billboard = entity?.billboard;
     const showLabel = entity?.label?.show?.getValue();
@@ -83,9 +112,28 @@ export function EntytyEditor({entity, onChange}: EntityEditorProps) {
 
             <Subsection key={entity.id + '.subsection-styling'}>
                 <h4>Styling properties</h4>
-                <FeatureEditor entity={entity} metadata={applicableMeta}/>
+                <button onClick={handleStyleCopy} class={'size-s'}>Copy style changes</button>
+                <FeatureEditor entity={entity} 
+                    metadata={applicableMeta} onChange={handleEntityChange}/>
             </Subsection>
 
         </Section>
     );
+}
+
+function clone(val: any) {
+    if (!val) {
+        return val;
+    }
+
+    // Most of the cesium property value objects should have clone method
+    if (val['clone'] && typeof val['clone'] === 'function') {
+       return val.clone();
+    }
+
+    if (Array.isArray(val)) {
+        return [...val];
+    }
+
+    return val;
 }

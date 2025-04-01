@@ -1,16 +1,15 @@
+import { BillboardGraphics, Property as CesiumProperty, ConstantProperty, DistanceDisplayCondition, LabelGraphics, NearFarScalar, PolygonGraphics, PolylineGraphics } from "cesium";
+import { useCallback, useState } from 'preact/hooks';
 import camelCaseToTitle from '../../misc/cammelToTitle';
-import { InputField } from './input-fld';
+import { DistanceDisplayConditionAsVector, NearFarAsVector, PropertyMeta, PropertyTypeVector } from '../meta/meta';
 import { BooleanField } from './boolean-fld';
 import { ColorField } from './color-fld';
-import { Property as CesiumProperty, ConstantProperty, DistanceDisplayCondition, NearFarScalar, Property } from "cesium";
-import { BillboardGraphics, LabelGraphics, PolygonGraphics, PolylineGraphics } from 'cesium';
-import { useCallback, useState } from 'preact/hooks';
 import { EnumField } from './enum-fld';
-import { VectorField } from './vector-fld';
-import { DistanceDisplayConditionAsVector, NearFarAsVector, PropertyMeta, PropertyTypeVector } from '../meta/meta';
 import { ImageUrlField } from './imageurl-fld';
+import { InputField } from './input-fld';
+import { VectorField } from './vector-fld';
 
-import "./property-fld.css"
+import "./property-fld.css";
 
 export type PropertyFieldProps = {
     subject: PolygonGraphics | PolylineGraphics | BillboardGraphics | LabelGraphics
@@ -23,7 +22,7 @@ export function PropertyField({subject, property: metaProperty, onChange}: Prope
     const label = title || camelCaseToTitle(name);
 
     const property = (subject as any)[metaProperty.name] as CesiumProperty;
-    const interpolated = property !== undefined && property instanceof Property && !property.isConstant;
+    const interpolated = property !== undefined && !property.isConstant;
 
     
     const value = (property as ConstantProperty)?.valueOf();
