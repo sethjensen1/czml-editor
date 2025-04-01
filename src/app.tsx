@@ -1,13 +1,14 @@
 import './app.css'
 import "cesium/Build/Cesium/Widgets/widgets.css";
 
-import { Viewer as CesiumViewer} from 'cesium'
+import { Viewer as CesiumViewer, Ion} from 'cesium'
 import { Editor } from './editor/editor';
 import { MainLayout } from './misc/elements/main-layout';
 import { useEffect, useState } from 'preact/hooks';
 
 import { createContext } from 'preact';
 
+Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZjBlYmNhMy0yY2RiLTQxZmQtOTk5Ny00NDE4YTBjMTI4M2YiLCJpZCI6MTEwMzQ1LCJpYXQiOjE3NDM1MzgyNjl9.BEY-3Gs-JVELjQq_Hegq5i_TMcWheejiTnauWSH7qxA';
 
 export const ViewerContext = createContext<CesiumViewer| null>(null);
 
