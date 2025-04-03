@@ -1,7 +1,7 @@
 import './editor.css';
 
 import { useCallback, useContext, useMemo, useState } from 'preact/hooks';
-import { Entity } from 'cesium';
+import { Entity, Viewer } from 'cesium';
 import { EntytyEditor } from './entity-editor';
 import { EntitiesList } from './entity-list/entities-list';
 
@@ -79,6 +79,18 @@ export function Editor() {
         setEntities(allEntities);
     }, [entities, setEntities, resources, setResources, extra, setExtra]);
 
+    const deleteEntity = useCallback((entity: Entity) => {
+        console.log('delete entity', entity);
+        
+        viewer && removeEntitytFromViewer(viewer, entity);
+
+        delete extra[entity.id];
+        setExtra(extra);
+        
+        setEntities(entities.filter(e => e.id !== entity.id));
+        
+        setSelectedEntity(null);
+    }, [entities, setEntities, setSelectedEntity, viewer, extra, setExtra]);
 
     const onEntityCreated = useCallback((newEntity: Entity) => {
         console.log('Entity created', newEntity);
@@ -99,7 +111,7 @@ export function Editor() {
                 <Google3DSwitch />
                 <SharedResourcesContext value={{resources, setResources}}>
                     <CreateEntitySection {...{ onEntityCreated }} />
-                    <EntitiesList {...{ entities, entity, extra, selectEntity }} />
+                    <EntitiesList {...{ entities, entity, extra, selectEntity, deleteEntity }} />
                     <EntytyEditor entity={entity} />
                 </SharedResourcesContext>
             </EditorContext>
@@ -128,4 +140,8 @@ function updateExtra(extra: EntitiesExtra, entities: Entity[]) {
         }
     });
     
+}
+
+function removeEntitytFromViewer(_v: Viewer, entity: Entity) {
+    entity.entityCollection.remove(entity);
 }
