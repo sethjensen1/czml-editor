@@ -8,6 +8,8 @@ import imgUndefColor from '../../assets/undef-color.svg';
 import imgChecker from '../../assets/checker-s.png';
 import { DebounceInput } from "../../misc/elements/debounced-input";
 
+type HSLA = [h: number, s: number, l: number, a: number];
+
 export type ColorFieldProps = {
     value?: CesiumColor;
     alpha?: boolean;
@@ -16,90 +18,71 @@ export type ColorFieldProps = {
 };
 export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
 
-    // TODO: Use array or object for color state
-
-    const [_h, _s, _l] = value && rgb2hsl(value.red, value.green, value.blue) || [0, 0.5, 0.5];
-
-    const [h, seth] = useState<number>(_h);
-    const [s, sets] = useState<number>(_s * 100.0);
-    const [l, setl] = useState<number>(_l * 100.0);
-    const [a, seta] = useState<number>(value && value.alpha || 1.0);
+    const [hsla, setHsla] = useState<HSLA>(toHsla(value));
 
     const handleH = useCallback((val: number) => {
-        seth(val * 360.0);
-        var clr = CesiumColor.fromHsl(val, s / 100.0, l / 100.0);
-        if (alpha) {
-            clr = clr.withAlpha(a);
-        }
-        onChange && onChange(clr);
-    }, [s, l, a, alpha, seth, onChange]);
+        const [_h, s, l, a] = hsla;
+        
+        const newHsla = [val, s, l, a] as HSLA;
+        setHsla(newHsla);
+
+        onChange && onChange(toColor(newHsla));
+    }, [hsla, setHsla, onChange]);
 
     const handleS = useCallback((val: number) => {
-        sets(val * 100.0);
-        var clr = CesiumColor.fromHsl(h / 360.0, val, l / 100.0);
-        if (alpha) {
-            clr = clr.withAlpha(a);
-        }
-        onChange && onChange(clr)
-    }, [h, l, a, alpha, sets, onChange]);
+        const [h, _s, l, a] = hsla;
+        
+        const newHsla = [h, val, l, a] as HSLA;
+        setHsla(newHsla);
+
+        onChange && onChange(toColor(newHsla));
+    }, [hsla, setHsla, onChange]);
 
     const handleL = useCallback((val: number) => {
-        setl(val * 100.0);
-        var clr = CesiumColor.fromHsl(h / 360.0, s / 100.0, val);
-        if (alpha) {
-            clr = clr.withAlpha(a);
-        }
-        onChange && onChange(clr)
-    }, [h, s, a, alpha, setl, onChange]);
+        const [h, s, _l, a] = hsla;
+        
+        const newHsla = [h, s, val, a] as HSLA;
+        setHsla(newHsla);
+
+        onChange && onChange(toColor(newHsla));
+    }, [hsla, setHsla, onChange]);
 
     const handleA = useCallback((val: number) => {
-        seta(val);
-        onChange && onChange(CesiumColor.fromHsl(h / 360.0, s / 100.0, l / 100.0).withAlpha(val))
-    }, [h, s, l, seta, onChange]);
+        const [h, s, l, _a] = hsla;
+        
+        const newHsla = [h, s, l, val] as HSLA;
+        setHsla(newHsla);
+
+        onChange && onChange(toColor(newHsla));
+    }, [hsla, setHsla, onChange]);
 
     const handleTextInput = useCallback((val: string) => {
         if (val === '' || val === 'none' || val === 'undefined') {
             onChange && onChange(undefined);
         }
         
-        const newcolor = Color.fromCssColorString(val);
+        let newcolor = Color.fromCssColorString(val);
+        const [_h, _s, _l, a] = hsla;
+        if (newcolor.alpha === 1 && a < 1.0) {
+            newcolor = newcolor.withAlpha(a);
+        }
+
         if (newcolor) {
             onChange && onChange(newcolor);
-            
-            const [h, s, l] = rgb2hsl(newcolor.red, newcolor.green, newcolor.blue);
-            seth(h);
-            seth(s);
-            seth(l);
-            
-            seta(newcolor.alpha);
+            setHsla(toHsla(newcolor));
         }
         
-    }, [seth, sets, setl, seta, onChange]);
+    }, [hsla, setHsla, onChange]);
 
-    const sf = `hsl(${h.toFixed(0)}, 0%, ${l.toFixed(2)}%)`;
-    const st = `hsl(${h.toFixed(0)}, 100%, ${l.toFixed(2)}%)`;
+    const [h, s, l, a] = hsla;
 
-    const lf = `hsl(${h.toFixed(0)}, ${s.toFixed(2)}%, 0%)`;
-    const lm = `hsl(${h.toFixed(0)}, ${s.toFixed(2)}%, 50%)`;
-    const lt = `hsl(${h.toFixed(0)}, ${s.toFixed(2)}%, 100%)`;
+    const [sf, st] = getSGradient(hsla);
+    const [lf, lm, lt] = getLGradient(hsla);
+    const [af, at] = getAGradient(hsla);
 
-    var color = CesiumColor.fromHsl(h / 360.0, s / 100.0, l / 100.0);
-    if (alpha) {
-        color = color.withAlpha(a);
-    }
-
-    const af = `hsla(${h.toFixed(0)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%, 0)`;
-    const at = `hsla(${h.toFixed(0)}, ${s.toFixed(1)}%, ${l.toFixed(1)}%, 1)`;
-
-    const previewStyle = {backgroundColor: `hsla(${h.toFixed(0)}, ${s.toFixed(2)}%, ${l.toFixed(2)}%, ${a.toFixed(3)})`};
-
-    let alphaHex = color && (Math.floor(color.alpha * 255).toString(16));
-    alphaHex = `${alphaHex.length === 1 ? '0' : ''}${alphaHex}`
-    
-    const colorHex = value && (color?.toCssHexString()) || 'none';
-
-    const alphaStr = (value && alpha && !colorHex.match(/#[\d,a-f]{8}/i)) ? alphaHex : '';
-    const inputText = colorHex + alphaStr;
+    const previewStyle = {backgroundColor: toCssString(hsla)};
+    const hex = toColor(hsla).toCssHexString();
+    const textValue = value ? hex : 'none';
 
     return (
     <div class="input-container color-fld button-size-s">
@@ -116,23 +99,24 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
                 </div>
             </div>
             <div class={'picker-sliders'}>
-                <GradientSlider value={h / 360.0} onChange={handleH} />
+                <GradientSlider value={h} onChange={handleH} />
                 
-                <GradientSlider value={s / 100.0} gradient={[sf, st]}
+                <GradientSlider value={s} gradient={[sf, st]}
                     onChange={handleS} />
                 
-                <GradientSlider value={l / 100.0} gradient={[lf, lm, lt]}
+                <GradientSlider value={l} gradient={[lf, lm, lt]}
                     onChange={handleL} />
                 
-                {alpha && <GradientSlider value={a} gradient={[af, at]} 
-                    backgroundImage={imgChecker}
-                    onChange={handleA} />}
+                {alpha && 
+                <GradientSlider value={a} gradient={[af, at]} 
+                    onChange={handleA} 
+                    backgroundImage={imgChecker} />}
 
             </div>
         </div>
 
         <div class={'color-text-input'}>
-            <DebounceInput value={inputText}
+            <DebounceInput key={hex} value={textValue}
                 debounceTimeout={500}
                 debouncedOnChange={handleTextInput} />
             <button class={'reset-value'} 
@@ -146,8 +130,65 @@ export function ColorField({value, label, alpha, onChange}: ColorFieldProps) {
     );
 }
 
-function rgb2hsl(r: number, g: number, b: number) {
-    let v=Math.max(r,g,b), c=v-Math.min(r,g,b), f=(1-Math.abs(v+v-c-1)); 
-    let h= c && ((v==r) ? (g-b)/c : ((v==g) ? 2+(b-r)/c : 4+(r-g)/c)); 
-    return [60*(h<0?h+6:h), f ? c/f : 0, (v+v-c)/2];
+// [h, s, l, a] all in [0..1]
+function toHsla(value?: Color) {
+    const [r = 1, g = 1, b = 1, a = 1] = [
+        value?.red, 
+        value?.green, 
+        value?.blue, 
+        value?.alpha
+    ];
+
+    const v = Math.max(r, g, b);
+    const c = v - Math.min(r, g, b)
+    const f = (1 - Math.abs(v + v - c - 1));
+
+    const vr = (g - b) / c;
+    const vg = 2 + (b - r) / c;
+    const vb = 4 + (r - g) / c;
+    const _h = c && ((v == r) ? vr : ((v == g) ? vg : vb));
+    
+    const h = 60 * (_h < 0 ? _h + 6 : _h);
+    const s = f ? c / f : 0;
+    const l = (v + v - c) / 2;
+
+    return [h / 360, s, l, a] as HSLA;
+}
+
+function toColor(hsla: HSLA) {
+    const [h, s, l, a] = hsla;
+    return CesiumColor.fromHsl(h, s, l, a);
+}
+
+function getSGradient(hsla: HSLA) {
+    const [h, _s, l] = hsla;
+
+    return [
+        `hsl(${(h * 360).toFixed(0)}, 0%, ${(l * 100).toFixed(1)}%)`,
+        `hsl(${(h * 360).toFixed(0)}, 100%, ${(l * 100).toFixed(1)}%)`,
+    ]
+}
+
+function getLGradient(hsla: HSLA) {
+    const [h, s, _l] = hsla;
+    
+    return [
+        `hsl(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, 0%)`,
+        `hsl(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, 50%)`,
+        `hsl(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, 100%)`,
+    ];
+}
+
+function getAGradient(hsla: HSLA) {
+    const [h, s, l] = hsla;
+
+    return [
+        `hsl(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%, 0)`,
+        `hsl(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%, 1)`,
+    ]
+}
+
+function toCssString(hsla: HSLA) {
+    const [h, s, l, a = 1] = hsla;
+    return `hsla(${(h * 360).toFixed(0)}, ${(s * 100).toFixed(1)}%, ${(l * 100).toFixed(1)}%, ${a.toFixed(3)})`
 }

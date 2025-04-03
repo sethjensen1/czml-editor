@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useRef, useState } from "preact/hooks";
 
 type DebouncerT = {
     value: string;
@@ -14,11 +14,6 @@ export function DebounceInput({value, debounceTimeout, debouncedOnChange, ...res
 
     const [text, setText] = useState(value);
 
-    // Be shure to update text on value change
-    useEffect(() => {
-        setText(value);
-    }, [value, setText]);
-    
     const debouncerRef = useRef<DebouncerT>({
         value,
         timeout: null
