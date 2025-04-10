@@ -7,6 +7,7 @@ import cls from "../../misc/cls";
 import "./type-icon.css";
 import "./entity-list-elem.css";
 
+import modelSvg from "../../assets/model.svg";
 import billboardSvg from "../../assets/billboard.svg";
 import labelSvg from "../../assets/label.svg";
 import polygonSvg from "../../assets/polygon.svg";
@@ -25,6 +26,7 @@ const typeIcons = {
     polygon: polygonSvg,
     polyline: polylineSvg,
     folder: folderSvg,
+    model: modelSvg
 }
 
 type EntityListElementProps = {
