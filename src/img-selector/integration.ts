@@ -7,7 +7,7 @@ import bingRoadsIcon from "./assets/bingRoads.png"
 import esriWorldIcon from "./assets/esriWorldImagery.png"
 import esriStreetsIcon from "./assets/esriWorldStreetMap.png"
 import natGeoIcon from "./assets/esriNationalGeographic.png"
-import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "../google/google3d";
+import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "./google3d";
 
 
 CesiumIntegrationApi.Dependencies.resolveProviderClass = () => {

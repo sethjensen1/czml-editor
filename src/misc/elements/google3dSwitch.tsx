@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "preact/hooks";
-import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "../../google/google3d";
+import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "../../img-selector/google3d";
 
 import { ViewerContext } from "../../app";
 import { LabledSwitch } from "./labled-switch";
