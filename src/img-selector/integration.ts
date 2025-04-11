@@ -56,7 +56,7 @@ export function createSelector(viewer: Viewer) {
     const toolbar = viewer.container.getElementsByClassName('cesium-viewer-toolbar')[0];
     const baseImagery = createBaseImageryOptions();
   
-    const defaultBaseImagery = baseImagery.find(i => i.lg_code === 'esri');
+    const defaultBaseImagery = baseImagery.find(i => i.lg_code === 'esri_world');
     if (defaultBaseImagery) {
         setBaseLayerByModel(viewer, defaultBaseImagery?.model);
     }
