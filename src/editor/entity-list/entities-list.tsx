@@ -4,7 +4,7 @@ import { Entity } from "cesium";
 import './entities-list.css';
 import { EntityListElement } from "./entity-list-elem";
 import { useState } from "preact/hooks";
-import { EntitiesDataTable } from "./entities-data-table";
+import { EntitiesDataTable } from "../../data-styling/entities-data-table";
 import { EntitiesExtra, EntityExtra } from "../editor";
 
 export type EntitiesListProps = {
@@ -40,10 +40,15 @@ export function EntitiesList({entities, entity, extra, onEntityExtraChange, sele
             <h3>Entities</h3>
             <div class={'entities-actions button-size-s'}>
                 {showDataTable && 
-                    <EntitiesDataTable entities={entities} onClose={() => {setShowDataTable(false);}} /> }
+                    <EntitiesDataTable entities={entities} entitiesExtra={extra}
+                        onClose={() => {setShowDataTable(false);}} 
+                    />}
                     
                 {entities.length > 0 && 
-                    <button onClick={() => {setShowDataTable(true);}}>Data table</button> }
+                    <button onClick={() => {setShowDataTable(true);}}>
+                        Data Table & Conditional Styling
+                    </button> }
+            
             </div>
             <div class={'scroll-container'}>
                 {$entities}
