@@ -1,0 +1,25 @@
+.cesium-viewer-geocoderContainer span.cesium-geocoder-searchButton {
+    width: 64px;
+    height: 62px;
+    border-radius: 8px;
+}
+
+.cesium-viewer-geocoderContainer input.cesium-geocoder-input {
+    height: 64px;
+    padding-right: 64px;
+    border-radius: 8px;
+    font-size: 20pt;
+}
+
+.cesium-viewer-geocoderContainer input.cesium-geocoder-input:focus {
+    width: 400px;
+}
+
+.cesium-viewer-geocoderContainer div.search-results {
+    margin-top: 5px;
+    border-radius: 8px;
+}
+
+.cesium-viewer-geocoderContainer div.search-results li {
+    font-size: 16pt;
+}

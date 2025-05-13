@@ -1,4 +1,4 @@
-import { Entity } from "cesium";
+import { CzmlDataSource, Entity } from "cesium";
 import { useCallback, useContext, useEffect, useRef } from "preact/hooks";
 import { ViewerContext } from "../../app";
 
@@ -17,15 +17,21 @@ export function EntitySelectionSync({entity, selectEntity}: EntitySelectionSyncP
     // callback on every update
     // Since we remove event listener, reapplication would also work
     // but this looks inefficient.
-    handlerRef.current = useCallback((selection) => {
+    handlerRef.current = useCallback(selection => {
         // Do not reset selection in editor on click outside
         if (selection && selection instanceof Entity) {
+            const owner = selection.entityCollection?.owner;
+            if (owner && owner instanceof CzmlDataSource && (owner as any).__ignore) {
+                viewer && (viewer.selectedEntity = undefined);
+                return;
+            }
+
             const resetEmpty = (!entity && selection);
             if (resetEmpty || entity?.id !== selection?.id) {
                 selectEntity && selectEntity(selection);
             }
         }
-    }, [entity, selectEntity]);
+    }, [entity, selectEntity, viewer]);
 
     useEffect(() => {
         const handler = handlerRef.current;
@@ -42,7 +48,6 @@ export function EntitySelectionSync({entity, selectEntity}: EntitySelectionSyncP
             viewer.selectedEntity = entity;
         }
     }, [viewer, entity])
-
 
     return <></>
 }

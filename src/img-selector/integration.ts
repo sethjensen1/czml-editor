@@ -1,4 +1,6 @@
-import { ArcGisMapServerImageryProvider, CesiumTerrainProvider, EllipsoidTerrainProvider, ImageryLayer, ImageryProvider, IonImageryProvider, ProviderViewModel, Viewer } from "cesium";
+import { ArcGisMapServerImageryProvider, CesiumTerrainProvider, CzmlDataSource, 
+    EllipsoidTerrainProvider, ImageryProvider, IonImageryProvider, ProviderViewModel, 
+    Viewer } from "cesium";
 import ImgSelector, { CesiumIntegrationApi, SelectorOption } from 'cesium-img-selector';
 import bingIcon from "./assets/bingAerial.png"
 import bingHybridIcon from "./assets/bingAerialLabels.png"
@@ -9,13 +11,11 @@ import esriStreetsIcon from "./assets/esriWorldStreetMap.png"
 import natGeoIcon from "./assets/esriNationalGeographic.png"
 import { switchGoogleGlobeOff, switchGoogleGlobeOn } from "./google3d";
 
+import "./cesium.css";
+
 
 CesiumIntegrationApi.Dependencies.resolveProviderClass = () => {
     throw new Error("Unsupported");
-}
-
-CesiumIntegrationApi.Dependencies.layerFromProviderAsync = (providerPromise: Promise<ImageryProvider>) => {
-  return ImageryLayer.fromProviderAsync(providerPromise);
 }
 
 type ProviderViewModelEx = ProviderViewModel & {
@@ -41,6 +41,18 @@ export function createImageryProviders() {
     return [...createBingProviders(), ...createESRIProviders()] as ProviderViewModelEx[];
 }
 
+function checkForDefaultAssets() {
+    const defaultAssetsLabel = (window as any).defaultAssetsLabel as string;
+
+    const defaultAssetsUrl = (window as any).defaultAssets as string;
+    const defaultAssets = defaultAssetsUrl ? CzmlDataSource.load(defaultAssetsUrl) : undefined;
+
+    return {
+        defaultAssetsLabel,
+        defaultAssets,
+    }
+}
+
 export async function setBaseLayerByModel(viewer: Viewer, model: ProviderViewModel) {
     const provider = await (model.creationCommand.canExecute ? 
         (model.creationCommand as unknown as (() => ImageryProvider))() : 
@@ -54,25 +66,45 @@ export async function setBaseLayerByModel(viewer: Viewer, model: ProviderViewMod
 
 export function createSelector(viewer: Viewer) {
     const toolbar = viewer.container.getElementsByClassName('cesium-viewer-toolbar')[0];
+
+    const selectorButton = document.createElement('button');
+    selectorButton.className = 'cesium-button cesium-toolbar-button img-selector-toggle';
+    toolbar?.appendChild(selectorButton);
+
+    const sContainer = document.createElement('div');
+    toolbar?.appendChild(sContainer);
+
     const baseImagery = createBaseImageryOptions();
   
     const defaultBaseImagery = baseImagery.find(i => i.lg_code === 'esri_world');
     if (defaultBaseImagery) {
         setBaseLayerByModel(viewer, defaultBaseImagery?.model);
     }
-  
+    
+    const { defaultAssetsLabel, defaultAssets } = checkForDefaultAssets();
+
     const imgSelector = new ImgSelector({
         visible: false,
         categories: categories,
-        mainUiContainer: toolbar,
+        defaultAssets: !!defaultAssets,
+        mainUiContainer: sContainer,
         baseImageryOptions: baseImagery,
-        defaultBaseImageryOption: defaultBaseImagery
+        defaultBaseImageryOption: defaultBaseImagery,
+        uiConfig: {
+            hideDefaultAssets: !defaultAssets,
+            defaultAssetsLabel
+        }
     });
+
+    if (defaultAssets) {
+        defaultAssets.then(ds => {
+            (ds as any).__ignore = true;
+            
+            ds.show = imgSelector.defaultAssets.value;
+            viewer.dataSources.add(ds);
+        });
+    }
   
-    const selectorButton = document.createElement('button');
-    selectorButton.className = 'cesium-button cesium-toolbar-button img-selector-toggle';
-    toolbar?.appendChild(selectorButton);
-    
     selectorButton.onclick = () => {
         imgSelector.setVisible(!imgSelector.visible.value);
     };
@@ -94,6 +126,13 @@ export function createSelector(viewer: Viewer) {
         }
         else {
             viewer.terrainProvider = new EllipsoidTerrainProvider();
+        }
+    });
+
+    imgSelector.defaultAssets.subscribe(async visible => {
+        const datasource = await defaultAssets;
+        if (datasource) {
+            datasource.show = visible;
         }
     });
 }

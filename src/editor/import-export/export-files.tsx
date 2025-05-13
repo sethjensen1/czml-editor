@@ -23,6 +23,7 @@ export function ExportFiles({entities, entitiesExtra, onExport}: ExportFilesProp
         
         entities
             .filter(e => !(entitiesExtra?.[e.id].doNotExport))
+            .filter(e => !((e.entityCollection?.owner as any).__ignore))
             .forEach(e => ds.entities.add(e));
         
         exportKml({ entities: ds.entities, kmz: archived }).then(async result => {
@@ -56,7 +57,8 @@ export function ExportFiles({entities, entitiesExtra, onExport}: ExportFilesProp
         const options = { exportImages: archived, exportModels: archived };
 
         const entitiesToExport = entities
-            .filter(e => !(entitiesExtra?.[e.id].doNotExport));
+            .filter(e => !(entitiesExtra?.[e.id].doNotExport))
+            .filter(e => !((e.entityCollection?.owner as any).__ignore));
 
         const { czml, exportedImages } = await exportAsCzml(entitiesToExport, options);
         
