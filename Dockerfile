@@ -6,9 +6,8 @@ RUN apt update && \
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY . ./
 
-RUN git submodule update --init --recursive
 RUN yarn && yarn build
 
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
