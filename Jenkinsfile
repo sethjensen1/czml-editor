@@ -2,7 +2,8 @@ pipeline {
   agent any
 
   environment {
-    REF_NAME = "${env.TAG_NAME ?: env.BRANCH_NAME}"
+    //REF_NAME = "${env.TAG_NAME ?: env.BRANCH_NAME}"
+    REF_NAME = "latest"
   }
     stages {
       stage('Build image') {
