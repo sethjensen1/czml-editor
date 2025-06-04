@@ -612,13 +612,6 @@
   resolved "https://registry.yarnpkg.com/@tweenjs/tween.js/-/tween.js-25.0.0.tgz#7266baebcc3affe62a3a54318a3ea82d904cd0b9"
   integrity sha512-XKLA6syeBUaPzx4j3qwMqzzq+V4uo72BnlbOjmuljLrRqdsd3qnzvZZoxvMHZ23ndsRS4aufU6JOZYpCbU6T1A==
 
-"@types/cesium@^1.70.4":
-  version "1.70.4"
-  resolved "https://registry.yarnpkg.com/@types/cesium/-/cesium-1.70.4.tgz#512410a4a908cba69dada78c7ce9eca11bea0a11"
-  integrity sha512-dSBhF5qftTCyB8xYRpumjzeEdEiV0wjDfmLtXF+1cNYUHvn2xs2HcvxCKFCqH6hEcATPWDP0WW6aaCCqrUo9dQ==
-  dependencies:
-    cesium "*"
-
 "@types/estree@1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.7.tgz#4158d3105276773d5b7695cd4834b1722e4f37a8"
@@ -740,7 +733,7 @@ caniuse-lite@^1.0.30001716:
   dependencies:
     preact "^10.19.6"
 
-cesium@*, cesium@^1.126.0:
+cesium@^1.126.0:
   version "1.129.0"
   resolved "https://registry.yarnpkg.com/cesium/-/cesium-1.129.0.tgz#82144d18e9efb43e217df6bf9d14d2a2ca627f75"
   integrity sha512-XDEJKLnr8s5/Q/1wcdZVEJCgx+xbgfDzkVKd9OxRZzYttazip6KffusMHexRdExVMPfDcTohuqcuHNxj9CUNFA==
