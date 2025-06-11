@@ -21,6 +21,8 @@ import { Section } from '../misc/elements/section';
 import { Subsection } from '../misc/elements/subsection';
 import { PropertyMeta } from './meta/meta';
 import { makeChangesSnapshot, StyleChanges, trackChange } from '../geometry-editor/changes-tracker';
+import { pathMetaData } from './meta/path-meta';
+import { pointMetaData } from './meta/point-meta';
 
 export type EntityEditorProps = {
     entity: Entity | null;
@@ -49,12 +51,13 @@ export function EntytyEditor({entity, onChange, onStyleCopy}: EntityEditorProps)
     }, [onStyleCopy]);
 
     const billboard = entity?.billboard;
-    const showLabel = entity?.label?.show?.getValue();
+    const showLabel = entity?.label && 
+        entity?.label?.show?.getValue() !== false;
 
     // TODO: add metadata
-    // const point = entity?.point;
-    // const path = entity?.path;
     // const tileset = entity?.tileset;
+    const path = entity?.path;
+    const point = entity?.point;
     const model = entity?.model;
     
     const polyline = entity?.polyline;
@@ -67,9 +70,11 @@ export function EntytyEditor({entity, onChange, onStyleCopy}: EntityEditorProps)
         polyline && polylineMetaData,
         polygon && polygonMetaData, 
         model && modelMetaData,
+        point && pointMetaData,
+        path && pathMetaData,
         showLabel && labelMetadata
     ].filter(m => !!m);
-    
+
     if (!entity) {
         return null;
     }
