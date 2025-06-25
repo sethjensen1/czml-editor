@@ -11,7 +11,7 @@ import { createSelector } from './img-selector/integration';
 const getArgs = new URLSearchParams(window.location.search);
 
 Ion.defaultAccessToken = getArgs.get('ionToken') || 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZjBlYmNhMy0yY2RiLTQxZmQtOTk5Ny00NDE4YTBjMTI4M2YiLCJpZCI6MTEwMzQ1LCJpYXQiOjE3NDM1MzgyNjl9.BEY-3Gs-JVELjQq_Hegq5i_TMcWheejiTnauWSH7qxA';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyNWI3ZDU1Zi0zNGFmLTRlYmQtODRiMy05MTA4YmFiMDM3YTEiLCJpZCI6NzMxNCwiaWF0IjoxNzUwODc0MDM1fQ.a6sCc76MKEGhmOyZF9Kcegwyfal6bcLZ0JFxSz7xCcc';
 
 export const ViewerContext = createContext<CesiumViewer| null>(null);
 
