@@ -50,8 +50,9 @@ const HelpContent = () =>
     <h4>Old version</h4>
     <p>
         This is a new version written with preact, vite and modern version of Cesiumjs.
-        You can use previous version at 
-        <a href="https://visionport.com/old-czml-kml-editor">https://visionport.com/old-czml-kml-editor</a>
+        You can find previous version at <a href="https://github.com/EndPointCorp/cesium-kml-czml-editor">
+            github.com/EndPointCorp/cesium-kml-czml-editor
+        </a>
     </p>
 </div>
 
