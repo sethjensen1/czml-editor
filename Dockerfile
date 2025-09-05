@@ -8,8 +8,7 @@ WORKDIR /usr/src/app
 
 COPY . ./
 
-RUN git submodule update --init --recursive && \
-    cd ./3dparty/cesium-img-selector && \
+RUN cd ./3dparty/cesium-img-selector && \
     yarn && yarn build
 
 RUN cd /usr/src/app && \
