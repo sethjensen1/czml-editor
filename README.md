@@ -2,4 +2,4 @@
 
 Visual editor for KML and CZML documents
 
-https://endpointcorp.github.io/czml-editor/
+https://www.visionport.com/cesium-kml-czml-editor/
